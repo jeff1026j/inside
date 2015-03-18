@@ -30,7 +30,8 @@ require_once (__ROOT__ . '/config/conn_db.php');
     
     //prepare the first cohort array
     $cohort['Month'][$row['firstdate']] = $row['firstdate'];
-    $cohort[$row['firstdate']][$returnDate] = $row['orderNumbers'];
+
+    $cohort[$row['firstdate']][$returnDate] = !strcmp($row['firstdate'],$returnDate)?$row['orderNumbers']:$row['orderNumbers'].'  ('.round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2).'%)';
 
   }
 
