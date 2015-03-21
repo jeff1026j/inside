@@ -1,7 +1,5 @@
 <?php
-    require_once 'config/config_db.php';
-    require_once 'config/conn_db.php';
-    
+    require_once 'header.php';
     /**
      * Check if a string is a valid date(time)
      *
@@ -57,8 +55,6 @@
 
 ?>
 <?php
-    require_once 'header.php';
-
     // foreach ($holder as $h) {
     //     $returnCustomers[] = $h['username'];
     // }   
@@ -182,4 +178,3 @@
 
 <div id="ex0"></div>
 <?php require_once 'footer.php';?>
-<?php $mysqli->close();?>

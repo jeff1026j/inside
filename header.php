@@ -1,3 +1,22 @@
+<?php
+require_once 'config/config_db.php';
+require_once 'config/conn_db.php';
+
+//get the last update order set
+//get the post data
+$sql = "SELECT MAX(order_time) from Orders";
+$stmt = $mysqli->prepare($sql); 
+$stmt->execute(); 
+
+$stmt->bind_result($newestime);
+// then fetch and close the statement
+$stmt->fetch();
+//echo $postid . $userid . $content . $title . $photo . $url;
+
+$stmt->close();
+
+?>
+
 <!DOCTYPE html>
 <html prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
     <head>
@@ -40,8 +59,10 @@
                                 <li><a href="/returnProductRanking.php">回購強商品排行榜</a></li>
                                 <li><a href="/userList.php">會員名單</a></li>
                                 <li><a href="/cohort.php">Cohort</a></li>
+                                <li><a href="/stock.php">叫貨準則</a></li>
                             </ul>
                         </div>
                     </nav>
                     <div class="row">
-                       <div class="formcolumn col-xs-10 col-centered">
+                        <div class="formcolumn col-xs-10 col-centered">
+                        <div class="alert alert-danger" role="alert">Last update: <?=$newestime?></div>

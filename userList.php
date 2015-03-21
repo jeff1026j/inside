@@ -2,7 +2,7 @@
     require_once 'header.php';
 ?>
 <h2>購買名單</h2>
-<br/><br/>
+<br/>
 <h4>購買次數：<h4>
 <!--<form class="form-inline">-->
     <div class="form-group">

@@ -1,6 +1,4 @@
 <?php
-    require_once 'config/config_db.php';
-    require_once 'config/conn_db.php';
     require_once 'header.php';
         
     function timehandler($str){
