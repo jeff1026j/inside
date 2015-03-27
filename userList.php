@@ -40,6 +40,7 @@
             <th data-field="user_name">姓名</th>
             <th data-field="phone">Phone</th>
             <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
+            <th data-field="numberProducts">最新訂購品數</th>
         </tr>
     </thead>
 </table>
@@ -53,7 +54,7 @@
             var value = $(this).val();
             $table.bootstrapTable('refresh', {
                url: defaultUrl+'?numberOfReturn='+value
-            });
+            }) ;
         });
         // This must be a hyperlink
         $("#export-button").on('click', function (event) {

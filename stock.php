@@ -1,7 +1,7 @@
 <?php
     require_once 'header.php';
 ?>
-<h2>MorningShop 無敵叫貨王：</h2>
+<h2>MorningShop 無敵叫貨王</h2>
 
 <div class = "col-md-8">
 	<form class="form-horizontal" role="form">
@@ -11,8 +11,9 @@
 		<input type="hidden" name="ratioOfBorrowBuy" id="ratioOfBorrowBuy" value="0.7">
 		<input type="hidden" name="goodsCostlastMonth" id="goodsCostlastMonth" value="370000">
 		<input type="hidden" name="expectCash" id="expectCash" value="150000">
+		<input type="hidden" name="updateMonth" id="updateMonth" value="3">
 	 	<div class="form-group">
-			<div class="checkbox">
+			<div class="checkbox" >
 		      <label>
 		        <input type="checkbox" id="ranking20"> 是否為前 20% 商品或有潛力？
 		      </label>
@@ -23,7 +24,7 @@
 		    	<input type="text" class="form-control" id="income">
 		</div>
 		<div class="form-group">
-		    	<label for="currentGoods">目前叫貨金額：</label>
+		    	<label for="currentGoods">本月叫貨金額：</label>
 		    	<input type="text" class="form-control" id="currentGoods">
 		</div>
 		<br/>
@@ -39,6 +40,18 @@
 	<div class="alert alert-danger" role="alert">寄倉就直接叫 1.3x 月銷量的貨</div>
 </div>
 <script type="text/javascript">
+
+function dataNeedsUpdate(){
+	var resultString = '';
+	var updateMonth = parseInt($('#updateMonth').val());
+	if (updateMonth != <?=date('m')?>) {
+		resultString = '請先完成月初結帳再使用';
+	};
+	return resultString;
+}
+
+
+
 $( document ).ready(function() {
 	var result = '' ;
 	$( "form" ).submit(function( event ) {
@@ -61,8 +74,13 @@ $( document ).ready(function() {
 		if (remainQuta < 0) { //we don't have any money
 			result = ranking20?'<a href="https://www.facebook.com/messages/wu.tsungjung" target="blank">點擊和 Jeffrey 討論</a>':'先不要叫貨';
 		}else{
-			result = ranking20?'以一個月的量叫（扣掉爆量的幾天），最多叫'+remainQuta:'以兩個禮拜的量來叫，最多叫 '+remainQuta;
+			result = ranking20?'以 1.3 倍月銷量叫（扣掉爆量的幾天）， 最多叫'+remainQuta:'以兩個禮拜的量來叫，最多叫 '+remainQuta;
 		}
+
+		var updateNeeded = dataNeedsUpdate();
+		result = updateNeeded !='' ? updateNeeded : result;
+
+		
 
 	  event.preventDefault();
 	  $('#result').html(result);

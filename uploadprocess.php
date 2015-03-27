@@ -2,23 +2,31 @@
     require_once 'header.php';
         
     function timehandler($str){
-        $time = strptime($str,'%m/%d/%Y %H:%M');    
-        @$year = $time[tm_mon]==11?2014:2015;
-        @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
+        $result = '';
+        if (strlen($str)<12) {
+            $time = strptime($str,'%m/%d %H:%M');    
+            @$year = $time[tm_mon]==11?2014:2015;
+            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';        
+        }elseif (strlen($str) > 13) {
+            $time = strptime($str,'%m/%d/%Y %H:%M');    
+            @$year = $time[tm_mon]==11?2014:2015;
+            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
+        }
+        
         return $result;
     }
     //file
     $rawfilename = isset($_FILES['csvfile']['tmp_name'])?$_FILES['csvfile']['tmp_name']:null;
     $row = 1;
     //check csv file first
-    if (($handle = fopen($rawfilename, "r")) !== FALSE) {
-        $i = 0;
-        while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
-            if($i!=0 && (!strcmp($data[4],'') || !strcmp(timehandler($data[1]),'0000-00-00 00:00:00') || !strcmp($data[21],'')))
-                header("Location: /"); //stop the db W
-            $i++;
-        }
-    }
+    // if (($handle = fopen($rawfilename, "r")) !== FALSE) {
+    //     $i = 0;
+    //     while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
+    //         if($i!=0 && (!strcmp($data[4],'') || !strcmp(timehandler($data[1]),'0000-00-00 00:00:00') || !strcmp($data[21],'')))
+    //             header("Location: /"); //stop the db W
+    //         $i++;
+    //     }
+    // }
 
 
     //parse data~

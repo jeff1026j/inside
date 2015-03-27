@@ -61,8 +61,12 @@ $stmt->close();
                                 <li><a href="/cohort.php">Cohort</a></li>
                                 <li><a href="/stock.php">叫貨準則</a></li>
                             </ul>
+                            <ul class="nav navbar-nav navbar-right">
+                                <p class="navbar-text">Last update: <?=$newestime?></p>
+                                
+                            </ul>
+
                         </div>
                     </nav>
                     <div class="row">
                         <div class="formcolumn col-xs-10 col-centered">
-                        <div class="alert alert-danger" role="alert">Last update: <?=$newestime?></div>
