@@ -137,10 +137,20 @@
 
 ?>
 
+<h2>回購目標：30%</h2>
 
-<h2><mark>回購目標：30%</mark></h2>
-<h3>本月/上月新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerTM-$totalCustomerLM) ?>  成長 :  <?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerTM-$totalCustomerLM))*100/($totalCustomerTM-$totalCustomerLM),2)?>%</h3>
-<h3>本月/上月新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersTM-$totalOrdersLM)?>  成長 :  <?=round((($totalOrders-$totalOrdersTM)-($totalOrdersTM-$totalOrdersLM))*100/($totalOrdersTM-$totalOrdersLM),2)?>%</h3>
+<!-- <ul class="list-inline">
+    <li class="dataSegment"><div class="listtitle">月新增會員數</div><div class="listMiddle"><?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerTM-$totalCustomerLM) ?></div><div class="listnumber"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerTM-$totalCustomerLM))*100/($totalCustomerTM-$totalCustomerLM),2)?>%</div></li>
+    <li class="dataSegment"><div class="listtitle">月新增訂單數</div><div class="listMiddle"><?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersTM-$totalOrdersLM)?></div><div class="listnumber"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersTM-$totalOrdersLM))*100/($totalOrdersTM-$totalOrdersLM),2)?>%</div></li>
+    <li class="dataSegment"><div class="listtitle">回購人數/總會員數</div><div class="listMiddle"><?=$returnCustomer?>/<?=$totalCustomer?></div><div class="listnumber"><?=round($returnCustomer*100/$totalCustomer,2)?>%</div></li>
+    <li class="dataSegment"><div class="listtitle">重複訂單/總定單數</div><div class="listMiddle"><?=$returnOrders?>/<?=$totalOrders?></div><div class="listnumber"><?=round($returnOrders*100/$totalOrders,2)?>%</div></li>
+    <li class="dataSegment"><div class="listtitle">回購次數</div><div class="listMiddle"><?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?></div></li>
+    <li class="dataSegment"><div class="listtitle">回購週期</div><div class="listMiddle"><?=round($interval/86400,1)?>天</div></li>
+
+</ul> -->
+
+<h3>本月/上月新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerTM-$totalCustomerLM) ?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerTM-$totalCustomerLM))*100/($totalCustomerTM-$totalCustomerLM),2)?></div>%</div></h3>
+<h3>本月/上月新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersTM-$totalOrdersLM)?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersTM-$totalOrdersLM))*100/($totalOrdersTM-$totalOrdersLM),2)?></div>%</div></h3>
 <hr/>
 
 <h3>回購人數/總會員數：<?=$returnCustomer?>/<?=$totalCustomer?>  :  <?=round($returnCustomer*100/$totalCustomer,2)?>%</h3>
@@ -201,6 +211,18 @@
             window.location = "/?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
 
         });;      
+
+        $('.percentage').each(function(){
+            var rate = parseFloat($(this).html());
+            if(rate > 0){
+              $(this).parent().addClass('green');
+              $(this).parent().html($(this).parent().html()+' ↑');
+            }else{
+              $(this).parent().addClass('red');
+              $(this).parent().html($(this).parent().html()+' ↓');
+            }
+
+        });
     });
 
 </script>

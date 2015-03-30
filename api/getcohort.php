@@ -1,4 +1,4 @@
-<?php
+  <?php
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
@@ -22,13 +22,29 @@ require_once (__ROOT__ . '/config/conn_db.php');
   $stmt = $mysqli->query($sql); 
   $data = $cohort = array();
 
-  while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
+//   +--------------+-----------+--------+
+// | orderNumbers | firstdate | PERIOD |
+// +--------------+-----------+--------+
+// |          148 |    201412 |      0 |
+// |           32 |    201412 |      1 |
+// |            6 |    201412 |      2 |
+// |           13 |    201412 |      3 |
+// |          783 |    201501 |      0 |
+// |           91 |    201501 |      1 |  
+// |           81 |    201501 |      2 |
+// |         1206 |    201502 |      0 |
+// |          118 |    201502 |      1 |
+// |         2135 |    201503 |      0 |
+// +--------------+-----------+--------+
 
-    $firstDateMonth = DateTime::createFromFormat('Y-m', substr($row['firstdate'], 0, 4).'-'.substr($row['firstdate'], 4,strlen($row['firstdate'])-4));
-    $firstDateMonth->add(new DateInterval('P'.$row['PERIOD'].'M'));
+  while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
+    // echo '$substr: '.substr($row['firstdate'], 0, 4).'-'.substr($row['firstdate'], 4,strlen($row['firstdate'])-4).'<br/>';
+    $firstDateMonth = DateTime::createFromFormat('Y-m-d', substr($row['firstdate'], 0, 4).'-'.substr($row['firstdate'], 4,strlen($row['firstdate'])-4).'-'.'01');
+    // echo '$firstDateMonth: '.$firstDateMonth->format('Ym').'<br/>';
+    $firstDateMonth->modify( 'first day of + '.$row['PERIOD'].' months' );
     $returnDate = $firstDateMonth->format('Ym');
-    
-    //prepare the first cohort array
+    //echo 'PERIOD: '.$row['PERIOD'].'<br/>firstdate: '.$row['firstdate'].'<br/>$returnDate: '.$returnDate.'<br/>orderNumbers: '.$row['orderNumbers'].'<br/><br/>';
+    //prepare the first cohort array  
     $cohort['Month'][$row['firstdate']] = $row['firstdate'];
 
     $cohort[$row['firstdate']][$returnDate] = !strcmp($row['firstdate'],$returnDate)?$row['orderNumbers']:$row['orderNumbers'].'  ('.round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2).'%)';
