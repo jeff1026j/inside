@@ -7,7 +7,7 @@
             $time = strptime($str,'%m/%d %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';        
-        }elseif (strlen($str) > 13) {
+        }else{
             $time = strptime($str,'%m/%d/%Y %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
