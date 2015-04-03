@@ -41,7 +41,7 @@
                 <label class="radio-inline">
                 <input type="radio" name="inlineRadioOptions" id="inlineRadio4" value="0"> 全部
                 </label>
-                <button class="btn btn-info" id="export-button">Export</button>
+                <button class="btn btn-warning Return export-button">Export</button>
            </div>
         <!--</form>-->
 
@@ -82,6 +82,9 @@
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-default btn-info">更新</button>    
                         </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-warning noReturn export-button">Export</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,14 +122,16 @@
             });
         });
         // This must be a hyperlink
-        $("#export-button").on('click', function (event) {
+        $(".export-button").on('click', function (event) {
         // CSV
+            var csv;
 //          exportTableToCSV.apply(this, [$('#productTable'), 'export.csv']);
-            var csv = $('#productTable').table2CSV({delivery:'value'});
-            window.location.href = 'data:text/csv;charset=UTF-8,'
-                                 + encodeURIComponent(csv);
-                                        
-        // IF CSV, don't do event.preventDefault() or return false
+            if ($(this).hasClass('Return')) {
+                csv = $('#productTable').table2CSV({delivery:'value'});
+            }else{
+                csv = $('#userTable').table2CSV({delivery:'value'});
+            };
+            window.open('data:text/csv;charset=UTF-8,'+ encodeURIComponent(csv), '_blank');
         // We actually need this to be a typical hyperlink
         });
         /*for 未回購專區*/
