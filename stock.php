@@ -5,13 +5,13 @@
 
 <div class = "col-md-8">
 	<form class="form-horizontal" role="form">
-		<input type="hidden" name="cash" id="cash" value="270000">
+		<input type="hidden" name="cash" id="cash" value="142775"><!-- 付完上月應付、但未付當月員工薪水 -->
 		<input type="hidden" name="adsSpend" id="adsSpend" value="300000">
 		<input type="hidden" name="operCost" id="operCost" value="200000">
-		<input type="hidden" name="ratioOfBorrowBuy" id="ratioOfBorrowBuy" value="0.7">
-		<input type="hidden" name="goodsCostlastMonth" id="goodsCostlastMonth" value="370000">
+		<!-- <input type="hidden" name="ratioOfBorrowBuy" id="ratioOfBorrowBuy" value="0.7"> -->
+		<input type="hidden" name="goodsCostlastMonth" id="goodsCostlastMonth" value="579126">
 		<input type="hidden" name="expectCash" id="expectCash" value="150000">
-		<input type="hidden" name="updateMonth" id="updateMonth" value="3">
+		<input type="hidden" name="updateMonth" id="updateMonth" value="4">
 	 	<div class="form-group">
 			<div class="checkbox" >
 		      <label>
@@ -78,12 +78,10 @@ $( document ).ready(function() {
 		}
 
 		var updateNeeded = dataNeedsUpdate();
-		result = updateNeeded !='' ? updateNeeded : result;
+		result = updateNeeded !='' ? updateNeeded : result;	
 
-		
-
-	  event.preventDefault();
-	  $('#result').html(result);
+		event.preventDefault();
+		$('#result').html(result);
 	});
 
 	

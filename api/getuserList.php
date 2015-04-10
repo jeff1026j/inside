@@ -17,7 +17,7 @@ if($numberOfReturn < 6 && $numberOfReturn > 0){
 }
 
 
-$sql="SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, count(O2.email) as numberProducts
+$sql="SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, count(O2.email) as numberProducts, GROUP_CONCAT(O2.product_name SEPARATOR ', ')
 FROM (	SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer, MAX(O1.order_time) as max_order_time
 		FROM Orders as O1 
 		GROUP By O1.email HAVING(returnCustomer $sql_number ) 
@@ -30,11 +30,11 @@ $stmt = $mysqli->prepare($sql);
 //$stmt->bind_param('d',$numberOfReturn);
 
 $stmt->execute();
-$stmt->bind_result($username, $email,$returnCustomer, $max_order_time, $phone, $numberProducts);
+$stmt->bind_result($username, $email,$returnCustomer, $max_order_time, $phone, $numberProducts,$product);
 //
 $json = array();
 while($stmt->fetch()){
-      $json[] = ['user_name'=>$username, 'email'=>$email, 'returnCustomer'=>$returnCustomer,'max_order_time'=>$max_order_time, 'phone'=>$phone, 'numberProducts'=>$numberProducts];
+      $json[] = ['user_name'=>$username, 'email'=>$email, 'returnCustomer'=>$returnCustomer,'max_order_time'=>$max_order_time, 'phone'=>$phone, 'numberProducts'=>$numberProducts, 'product'=>$product];
 }
 echo json_encode($json);
 

@@ -21,13 +21,17 @@ $minDate = $minDate->modify( '- '.$minInterval.' days')->format('Y-m-d');
 
 // echo "maxDate: ".$maxDate.";   minDate: ".$minDate.";   cd: ".$currentDate;
  
-$sql="SELECT newestOrders.email,newestOrders.username, newestOrders.max_order_time
+$sql="SELECT newestOrders.email,newestOrders.username, newestOrders.max_order_time, GROUP_CONCAT(O2.product_name SEPARATOR ', ')
       FROM (SELECT O1.email, MAX(O1.order_time) as max_order_time, O1.username
             FROM Orders as O1   
             WHERE O1.order_time < ?
-            GROUP By O1.email) as newestOrders
+            GROUP By O1.email) as newestOrders, Orders O2
       WHERE newestOrders.max_order_time > ? 
-      AND newestOrders.max_order_time < ?;
+      AND newestOrders.max_order_time < ?
+	  AND O2.email = newestOrders.email
+	  AND O2.order_time = newestOrders.max_order_time
+	  GROUP BY O2.email,O2.order_time
+      ;
 ";
 		
 
@@ -35,11 +39,11 @@ $stmt = $mysqli->prepare($sql);
 $stmt->bind_param('sss',$currentDate,$maxDate,$minDate);
 
 $stmt->execute();
-$stmt->bind_result($email, $username, $max_order_time);
+$stmt->bind_result($email, $username, $max_order_time,$product_name);
 //
 $json = array();
 while($stmt->fetch()){
-      $json[] = ['user_name'=>$username, 'email'=>$email,'max_order_time'=>$max_order_time];
+      $json[] = ['user_name'=>$username, 'email'=>$email,'max_order_time'=>$max_order_time, 'product'=>$product_name];
 }
 echo json_encode($json);
 

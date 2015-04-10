@@ -15,9 +15,9 @@
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="home">
-        <h2>購買名單</h2>
+        <h2>回購名單</h2>
         <br/>
-        <h4>購買次數：<h4>
+        <h4>購買次數：</h4>
         <!--<form class="form-inline">-->
             <div class="form-group">
                 <label class="radio-inline">
@@ -47,7 +47,7 @@
 
         <br/><br/>
 
-        <table data-toggle="table" data-url="/api/getuserList.php" id="productTable" data-sort-name="name" data-sort-order="desc">
+        <table data-toggle="table" data-url="/api/getuserList.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc">
             <thead>
                 <tr>
                     <th data-field="email">Email</th>
@@ -55,14 +55,15 @@
                     <th data-field="phone">Phone</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
                     <th data-field="numberProducts">最新訂購品數</th>
+                    <th data-field="product">商品</th>
                 </tr>
             </thead>
         </table>
     </div>
     <div role="tabpanel" class="tab-pane" id="profile">
-        <h2>購買名單</h2>
-        <br/>
-        <h4>計算日期：<h4>
+        <h2>未回購名單</h2>
+        <br/> 
+        <h4>計算日期：</h4>
         <div class="input-group date">
           <input type="text" id="currentDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
         </div>
@@ -91,12 +92,13 @@
         </form>
         
 
-        <table data-toggle="table" data-url="/api/getUsernoReturn.php" id="userTable" data-sort-name="name" data-sort-order="desc">
+        <table data-toggle="table" data-url="/api/getUsernoReturn.php" data-search="true" id="userTable" data-sort-name="name" data-sort-order="desc">
             <thead>
                 <tr>
                     <th data-field="email">Email</th>
                     <th data-field="user_name">姓名</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
+                    <th data-field="product">商品</th>
                 </tr>
             </thead>
         </table>
@@ -135,33 +137,33 @@
         // We actually need this to be a typical hyperlink
         });
         /*for 未回購專區*/
-        var getUsernoReturnURL="/api/getUsernoReturn.php";
         // $("input:radio[name=inlineRadioOptions]").click(function() {
         //     var value = $(this).val();
         
         // });
         $('#noReturnform').validator().on('submit', function (e) {
             // console.log('xxxxxx');
-          if (e.isDefaultPrevented()) {
+            var getUsernoReturnURL="/api/getUsernoReturn.php";
+            if (e.isDefaultPrevented()) {
             // handle the invalid form...
-            e.preventDefault();
-          } else {
+                e.preventDefault();
+            } else {
             // everything looks good!
-            e.preventDefault();
-            var currentDate = $('#currentDate').val();
-            var maxInterval = $('#maxKey').val();
-            var minInterval = $('#minKey').val(); 
-            // console.log('currentDate: '+currentDate+' maxInterval: '+maxInterval+' minInterval: '+minInterval);
-            // console.log(getUsernoReturnURL+'?currentDate='+currentDate+'&maxInterval='+maxInterval+'&minInterval='+minInterval);
-            $('#userTable').bootstrapTable('refresh', {
-               url: getUsernoReturnURL+'?currentDate='+currentDate+'&maxInterval='+maxInterval+'&minInterval='+minInterval
-            });
+                e.preventDefault();
+                var currentDate = $('#currentDate').val();
+                var maxInterval = $('#maxKey').val();
+                var minInterval = $('#minKey').val(); 
+                // console.log('currentDate: '+currentDate+' maxInterval: '+maxInterval+' minInterval: '+minInterval);
+                // console.log(getUsernoReturnURL+'?currentDate='+currentDate+'&maxInterval='+maxInterval+'&minInterval='+minInterval);
+                $('#userTable').bootstrapTable('refresh', {
+                url: getUsernoReturnURL+'?currentDate='+currentDate+'&maxInterval='+maxInterval+'&minInterval='+minInterval
+                });
 
-          }
+            }
         });
 
         //for date picker
-        $('.input-group.date').datepicker({
+        $('.input-group.date').datepicker( {
             format: "yyyy-mm-dd",
             orientation: "top auto",
             todayHighlight: true,
