@@ -4,7 +4,7 @@
 <h2>回購強商品</h2>
 <h3>為回購會員重複購買之商品排行榜</h3>
 <br/><br/>
-<h4>回購次數：<h4>
+<h4>回購次數：</h4>
 <label class="radio-inline">
 <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1" checked="checked"> 1
 </label>

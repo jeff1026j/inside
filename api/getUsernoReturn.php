@@ -28,9 +28,8 @@ $sql="SELECT newestOrders.email,newestOrders.username, newestOrders.max_order_ti
             GROUP By O1.email) as newestOrders, Orders O2
       WHERE newestOrders.max_order_time > ? 
       AND newestOrders.max_order_time < ?
-	  AND O2.email = newestOrders.email
-	  AND O2.order_time = newestOrders.max_order_time
-	  GROUP BY O2.email,O2.order_time
+	AND O2.email = newestOrders.email
+	GROUP BY newestOrders.email
       ;
 ";
 		

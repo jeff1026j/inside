@@ -54,8 +54,8 @@
                     <th data-field="user_name">姓名</th>
                     <th data-field="phone">Phone</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
-                    <th data-field="numberProducts">最新訂購品數</th>
-                    <th data-field="product">商品</th>
+                    <!-- <th data-field="numberProducts">最新訂購品數</th> -->
+                    <th data-field="product">過往購買商品</th>
                 </tr>
             </thead>
         </table>
@@ -69,7 +69,7 @@
         </div>
         <h4>未回購時間</h4>
         <form class="form-horizontal" data-toggle="validator" role="form" id="noReturnform">
-            <div class="form-group">
+            <div class="form-group"> 
                 <div class="col-md-6">
                     <div class="form-group row">
                         <label for="inputKey" class="col-md-1 control-label">Min</label>
@@ -98,7 +98,7 @@
                     <th data-field="email">Email</th>
                     <th data-field="user_name">姓名</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
-                    <th data-field="product">商品</th>
+                    <th data-field="product">過往購買商品</th>
                 </tr>
             </thead>
         </table>
