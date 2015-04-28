@@ -6,8 +6,8 @@
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">回購名單</a></li>
-    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">未回購名單</a></li>
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">購買名單</a></li>
+    <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">久久未買</a></li>
     <!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
     <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
   </ul>
@@ -15,7 +15,7 @@
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="home">
-        <h2>回購名單</h2>
+        <h2>購買名單</h2>
         <br/>
         <h4>購買次數：</h4>
         <!--<form class="form-inline">-->
@@ -41,13 +41,13 @@
                 <label class="radio-inline">
                 <input type="radio" name="inlineRadioOptions" id="inlineRadio4" value="0"> 全部
                 </label>
-                <button class="btn btn-warning Return export-button">Export</button>
+                <!-- <button class="btn btn-warning Return export-button">Export</button> -->
            </div>
         <!--</form>-->
 
         <br/><br/>
 
-        <table data-toggle="table" data-url="/api/getuserList.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc">
+        <table data-toggle="table" data-url="/api/getuserList.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
             <thead>
                 <tr>
                     <th data-field="email">Email</th>
@@ -55,19 +55,19 @@
                     <th data-field="phone">Phone</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
                     <!-- <th data-field="numberProducts">最新訂購品數</th> -->
-                    <th data-field="product">過往購買商品</th>
+                    <th data-field="product" class="no_export">過往購買商品</th>
                 </tr>
             </thead>
         </table>
     </div>
     <div role="tabpanel" class="tab-pane" id="profile">
-        <h2>未回購名單</h2>
+        <h2>久久未買</h2>
         <br/> 
         <h4>計算日期：</h4>
         <div class="input-group date">
           <input type="text" id="currentDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
         </div>
-        <h4>未回購時間</h4>
+        <h4>未購買時間</h4>
         <form class="form-horizontal" data-toggle="validator" role="form" id="noReturnform">
             <div class="form-group"> 
                 <div class="col-md-6">
@@ -83,22 +83,22 @@
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-default btn-info">更新</button>    
                         </div>
-                        <div class="col-md-2">
+                        <!-- <div class="col-md-2">
                             <button class="btn btn-warning noReturn export-button">Export</button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
         </form>
         
 
-        <table data-toggle="table" data-url="/api/getUsernoReturn.php" data-search="true" id="userTable" data-sort-name="name" data-sort-order="desc">
+        <table data-toggle="table" data-url="/api/getUsernoReturn.php" data-search="true" id="userTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
             <thead>
                 <tr>
                     <th data-field="email">Email</th>
                     <th data-field="user_name">姓名</th>
                     <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
-                    <th data-field="product">過往購買商品</th>
+                    <th data-field="product" class="no_export">過往購買商品</th>
                 </tr>
             </thead>
         </table>
@@ -124,18 +124,18 @@
             });
         });
         // This must be a hyperlink
-        $(".export-button").on('click', function (event) {
-        // CSV
-            var csv;
-//          exportTableToCSV.apply(this, [$('#productTable'), 'export.csv']);
-            if ($(this).hasClass('Return')) {
-                csv = $('#productTable').table2CSV({delivery:'value'});
-            }else{
-                csv = $('#userTable').table2CSV({delivery:'value'});
-            };
-            window.open('data:text/csv;charset=UTF-8,'+ encodeURIComponent(csv), '_blank');
-        // We actually need this to be a typical hyperlink
-        });
+//         $(".export-button").on('click', function (event) {
+//         // CSV
+//             var csv;
+// //          exportTableToCSV.apply(this, [$('#productTable'), 'export.csv']);
+//             if ($(this).hasClass('Return')) {
+//                 csv = $('#productTable').table2CSV({delivery:'value'});
+//             }else{
+//                 csv = $('#userTable').table2CSV({delivery:'value'});
+//             };
+//             window.open('data:text/csv;charset=UTF-8,'+ encodeURIComponent(csv), '_blank');
+//         // We actually need this to be a typical hyperlink
+//         });
         /*for 未回購專區*/
         // $("input:radio[name=inlineRadioOptions]").click(function() {
         //     var value = $(this).val();

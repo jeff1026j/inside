@@ -47,6 +47,34 @@
       return array($data, $returnCustomers);
     }
 
+    function getReturnUsersbyNumberReturn($endTime){
+      global $mysqli;
+      //compute the endTime
+      $endTimeSqlO1 = $endTime?'where O1.order_time <\''.$endTime.'\'':'';
+      
+      //get all return oders and users
+      $sql = 'SELECT returnCustomer, COUNT(returnCustomer) as numberReturn
+              FROM (
+                    SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
+                    FROM Orders as O1  '.$endTimeSqlO1.'
+                    GROUP By O1.email HAVING returnCustomer > 1 
+                    ) as O2
+              GROUP BY returnCustomer
+       ;';
+
+
+      $stmt = $mysqli->query($sql); 
+      $data = array();
+      $returnCustomers = array();
+      while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
+        $returnCustomers[] = $row;
+      }
+
+      $stmt->close();
+      
+      return $returnCustomers;
+    }
+
     function getDistincOrders($endTime){
       global $mysqli;
 
@@ -76,7 +104,7 @@
     list($totalCustomerTM, $totalOrdersTM) = getDistincOrders($endTimeThisMonth);
     list($dataLM, $returnCustomersLM) = getAllReturnOrders($endTimeLastMonth);
     list($totalCustomerLM, $totalOrdersLM) = getDistincOrders($endTimeLastMonth);
-
+    $numberReturns = getReturnUsersbyNumberReturn($endTime);
 ?>
 <?php
     // foreach ($holder as $h) {
@@ -158,6 +186,17 @@
 <hr/>
 <h3>每人回購次數： <?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?></h3>
 <h3>每人回購週期(平均)： <?=round($interval/86400,1)?>天</h3>
+
+<ul class="list-inline">
+<?php 
+  $lastNumberofReturn = 0;
+  foreach ($numberReturns as $value) { 
+      $lastNumberofReturn += $value['numberReturn'];
+      $overNumberofReturn = $value['numberReturn'] + $returnCustomer - $lastNumberofReturn;
+    ?>
+    <li class="dataSegment"><div class="listtitle">回購次數</div><div class="listMiddle"><?=$value['returnCustomer']?></div><div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div></li>
+  <?php } ?>
+</ul>
 
 <h3>選擇結束週期：</h3>
 <div class="input-group date">

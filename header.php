@@ -40,6 +40,10 @@ $stmt->close();
     <link rel="stylesheet" href="css/datepicker3.css">
     <script type="text/javascript" src="js/table2CSV.js"></script>
     <script type="text/javascript" src="js/validator.js"></script>
+    <script type="text/javascript" src="js/bootstrap-table-export.js"></script>
+    <script type="text/javascript" src="js/tableExport.js"></script>
+    <script type="text/javascript" src="js/jquery.base64.js"></script>
+
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </head>
