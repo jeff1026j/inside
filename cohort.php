@@ -19,7 +19,7 @@
 <h3>業界標準：12%(一年長期)</h3>
 <h3>業界標準：30%(第 2 個月)</h3>
 <br/>
-<h4>Chris:Hook老顧客，Jake：招回購新會員，Jeff：調產品結構</h4>
+<h4>Chris:Hook老顧客，Jake：招回購新會員，Jeff：調產品結構，JPG：商品力、不缺貨，Chi：文案風格形象</h4>
 <!--<form class="form-inline">-->
 <br/>
 <button class="btn btn-info" id="export-button">Export</button>

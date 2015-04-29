@@ -34,9 +34,9 @@ $product_id = isset($_GET['productid'])?$_GET['productid']:null;
 	$stmt->bind_result($avg_sale);
 	//
 	echo '<root>';
-	while($stmt->fetch()){
-	      echo '<avg_sale>'.floor($avg_sale).'</avg_sale>';
-	}
+	$stmt->fetch();
+	$avg_sale = !$avg_sale?0:$avg_sale;
+	echo '<avg_sale>'.floor($avg_sale).'</avg_sale>';
 	echo '</root>';
 	$stmt->close();
 }
