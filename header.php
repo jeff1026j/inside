@@ -64,6 +64,7 @@ $stmt->close();
                                 <li><a href="/userList.php">會員名單</a></li>
                                 <li><a href="/cohort.php">Cohort</a></li>
                                 <li><a href="/stock.php">叫貨準則</a></li>
+                                <li><a href="/service.php">客服</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
                                 <p class="navbar-text">Last update: <?=$newestime?></p>
