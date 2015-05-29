@@ -7,10 +7,16 @@
             $time = strptime($str,'%m/%d %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';        
-        }else{
+        }else if(strrpos($str, "/") < 4){
             $time = strptime($str,'%m/%d/%Y %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
+        }else{
+            $time = strptime($str,'%Y/%m/%d %H:%M');    
+            @$year = $time[tm_mon]==11?2014:2015;
+            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
+
+
         }
         
         return $result;

@@ -7,18 +7,22 @@
 - 加入購物車後沒東西？：
 
 <div class="answer"><span style="color: #ff0000;">您好，不好意思，可以請您幫我們換個瀏覽器，或是先登入再把商品加到購物車嗎？如果還是有任何問題都在請您和我說。</span></div>
-
+&nbsp;&nbsp;
 <h3>缺貨問題</h3>
 - 到了可以通知嗎：
 
 <div class="answer"><span style="line-height: 1.5; color: #ff0000;">你好，可以加 Line 發問（http://bit.ly/morning-line ）選擇「缺貨到貨通知」，或是加入這個臉書活動 （http://bit.ly/mo-event ）都可以即時得到通知呦 ～：）</span></div>
+&nbsp;&nbsp;
+<h3>運費問題</h3>
+- 有運費嗎？  免運門檻是多少？
 
-&nbsp;
+<div class="answer"><span style="color: #ff0000;">您好 我們都是全館 $800 免運，未達免運門檻運費 $70 喔，要提醒您門檻是扣掉折扣之後的金額來計算</span></div>
+&nbsp;&nbsp;
 <h3>挑選問題</h3>
 - 孕婦（母乳媽媽）適合吃麥片嗎？
 - 減肥適合吃的麥片
 - 小孩適合吃的麥片
-&nbsp;
+&nbsp;&nbsp;
 <h3>貨到時間問題</h3>
 - 司機到了不在家：
 
@@ -63,8 +67,8 @@
 - 麥片要冰嗎？ / 要怎麼保存
 
 <div class="answer"><span style="color: #ff0000;">您好，不一定要冰喔，不要要記得密封好，因為怕空氣跑進去他會受潮軟掉</span></div>
-
-- 收到感謝時
+&nbsp; <br/>&nbsp; <br/>
+<h3>- 收到感謝時</h3>
 <div class="answer"><span style="color: #ff0000;">有問題再問小編喲～ :)</span></div>
 
 <script type="text/javascript">

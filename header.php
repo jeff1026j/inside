@@ -67,7 +67,7 @@ $stmt->close();
                                 <li><a href="/service.php">客服</a></li>
                             </ul>
                             <ul class="nav navbar-nav navbar-right">
-                                <p class="navbar-text">Last update: <?=$newestime?></p>
+                                <p class="navbar-text">上次資料匯入時間: <?=$newestime?></p>
                                 
                             </ul>
 

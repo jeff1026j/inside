@@ -90,73 +90,96 @@
       return array($totalCustomer, $totalOrders); 
     }
 
+    function returnInterval($orders){
+      //compute return order interval
+      $interval = 0;
+      $email = '';
+      $counter = 0;
+      $mainCounter = 0;
+      $temp_interval = 0;
+      $arraycount = 1;
+      $modeDay = 3;
+      $modeCount = array();
+      $data = $orders;
+
+      foreach ($data as $value) {
+
+          if ($email == $value['email']) {
+              //compute time difference to pre one
+              if(abs($value['order_time'] - $order_time) > 86400*2){
+                  $temp_interval += abs($value['order_time'] - $order_time);
+                  $counter ++; 
+              }
+              $order_time = $value['order_time'];
+
+
+              if ($arraycount == count($data)) {
+                  @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
+                  $interval += $temp_interval/$counter;
+                  $temp_interval = 0;
+                  $mainCounter++;
+              }
+
+          }else{
+              $email = $value['email'];
+              $order_time = $value['order_time'];
+              
+              if ($counter > 0) {
+                  @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
+                  $interval += $temp_interval/$counter;
+                  $temp_interval = 0;
+                  $mainCounter++;
+              }
+              $counter = 0;
+          }
+
+          $arraycount ++;
+
+      }    
+
+      $interval = $interval/$mainCounter;
+      
+
+      return array($interval,$modeCount,$modeDay);
+    }
+    
     
     $endTime = isset($_GET['endtime'])&&isValidDateTimeString($_GET['endtime'],'Y-m-d')?$_GET['endtime']:null;
+    $endTime = $endTime?$endTime.' 23:59:59':null;
     $date = (new DateTime($endTime))->modify('first day of this month');
-    $endTimeThisMonth = $date->format('Y-m-d');
-    $endTimeLastMonth = $date->modify('first day of last month')->format('Y-m-d');
+
+    $endTimeThisMonth = $date->format('Y-m-d');$endTimeThisMonth = $endTimeThisMonth.' 23:59:59';
+    $endTimeLastMonth = $date->modify('first day of last month')->format('Y-m-d');$endTimeLastMonth=$endTimeLastMonth.' 23:59:59';
+
+    $endTimeLastMonthSameDay = (new DateTime($endTime))->modify('- 30 days')->format('Y-m-d');$endTimeLastMonthSameDay = $endTimeLastMonthSameDay.' 23:59:59';
+
     // echo $endTimeThisMonth;
     // echo $endTimeLastMonth;
+    
     //get current customer
+    //endTime : 6/10
     list($data, $returnCustomers) = getAllReturnOrders($endTime);
     list($totalCustomer, $totalOrders) = getDistincOrders($endTime);
-    list($dataTM, $returnCustomersTM) = getAllReturnOrders($endTimeThisMonth);
+    
+    //endTimeThisMonth : 6/1
+    //list($dataTM, $returnCustomersTM) = getAllReturnOrders($endTimeThisMonth);
     list($totalCustomerTM, $totalOrdersTM) = getDistincOrders($endTimeThisMonth);
-    list($dataLM, $returnCustomersLM) = getAllReturnOrders($endTimeLastMonth);
+    
+    //endTimeLastMonth : 5/1
+    //list($dataLM, $returnCustomersLM) = getAllReturnOrders($endTimeLastMonth);
     list($totalCustomerLM, $totalOrdersLM) = getDistincOrders($endTimeLastMonth);
+    
+    //endTimeLastMonthSameDay : 5/10
+    //list($dataSLM, $returnCustomersSLM) = getAllReturnOrders($endTimeLastMonthSameDay);
+    list($totalCustomerSLM, $totalOrdersSLM) = getDistincOrders($endTimeLastMonthSameDay);
+
     $numberReturns = getReturnUsersbyNumberReturn($endTime);
 ?>
 <?php
     // foreach ($holder as $h) {
     //     $returnCustomers[] = $h['username'];
     // }   
-    
-    //compute return order interval
-    $interval = 0;
-    $email = '';
-    $counter = 0;
-    $mainCounter = 0;
-    $temp_interval = 0;
-    $arraycount = 1;
-    $modeDay = 3;
-    $modeCount = array();
-
-    foreach ($data as $value) {
-
-        if ($email == $value['email']) {
-            //compute time difference to pre one
-            if(abs($value['order_time'] - $order_time) > 86400*2){
-                $temp_interval += abs($value['order_time'] - $order_time);
-                $counter ++; 
-            }
-            $order_time = $value['order_time'];
-
-
-            if ($arraycount == count($data)) {
-                @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
-                $interval += $temp_interval/$counter;
-                $temp_interval = 0;
-                $mainCounter++;
-            }
-
-        }else{
-            $email = $value['email'];
-            $order_time = $value['order_time'];
-            
-            if ($counter > 0) {
-                @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
-                $interval += $temp_interval/$counter;
-                $temp_interval = 0;
-                $mainCounter++;
-            }
-            $counter = 0;
-        }
-
-        $arraycount ++;
-
-    }    
-
-    $interval = $interval/$mainCounter;
+    list($interval,$modeCount,$modeDay) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);
     $returnOrders    = count($data);
@@ -164,8 +187,6 @@
     // print_r($modeCount);
 
 ?>
-
-<h2>回購目標：30%</h2>
 
 <!-- <ul class="list-inline">
     <li class="dataSegment"><div class="listtitle">月新增會員數</div><div class="listMiddle"><?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerTM-$totalCustomerLM) ?></div><div class="listnumber"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerTM-$totalCustomerLM))*100/($totalCustomerTM-$totalCustomerLM),2)?>%</div></li>
@@ -176,9 +197,9 @@
     <li class="dataSegment"><div class="listtitle">回購週期</div><div class="listMiddle"><?=round($interval/86400,1)?>天</div></li>
 
 </ul> -->
-
-<h3>本月/上月新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerTM-$totalCustomerLM) ?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerTM-$totalCustomerLM))*100/($totalCustomerTM-$totalCustomerLM),2)?></div>%</div></h3>
-<h3>本月/上月新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersTM-$totalOrdersLM)?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersTM-$totalOrdersLM))*100/($totalOrdersTM-$totalOrdersLM),2)?></div>%</div></h3>
+本月今天/上月今天
+<h3>新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerSLM-$totalCustomerLM) ?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerSLM-$totalCustomerLM))*100/($totalCustomerSLM-$totalCustomerLM),2)?></div>%</div></h3>
+<h3>新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersSLM-$totalOrdersLM)?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersSLM-$totalOrdersLM))*100/($totalOrdersSLM-$totalOrdersLM),2)?></div>%</div></h3>
 <hr/>
 
 <h3>回購人數/總會員數：<?=$returnCustomer?>/<?=$totalCustomer?>  :  <?=round($returnCustomer*100/$totalCustomer,2)?>%</h3>
