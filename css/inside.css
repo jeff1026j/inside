@@ -39,3 +39,16 @@ body { padding-top: 70px; }
 .green{
 	color: rgb(13, 219, 13);
 }
+
+.progress{
+	height: 75px;
+}
+
+.newOldPercentage{
+	font-size: 20px;
+	line-height: 25px;
+}
+.newOldOrders{
+	font-size: 45px;
+  	line-height: 49px;
+}

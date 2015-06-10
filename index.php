@@ -218,6 +218,7 @@
     ksort($modeCount);
     // print_r($modeCount);
     $month = (new DateTime($endTime))->modify('first day of this month')->format('m');
+    $lastMonth = (new DateTime($endTime))->modify('first day of last month')->format('m');
 ?>
 
 <!-- <ul class="list-inline">
@@ -230,13 +231,46 @@
 
 </ul> -->
 
-<?=$month?>月今天/上月今天
-<h3>新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerSLM-$totalCustomerLM) ?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerSLM-$totalCustomerLM))*100/($totalCustomerSLM-$totalCustomerLM),2)?></div>%</div></h3>
-<h3>新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersSLM-$totalOrdersLM)?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersSLM-$totalOrdersLM))*100/($totalOrdersSLM-$totalOrdersLM),2)?></div>%</div></h3>
+<h3>新增訂單 & 會員</h3>
+<table data-toggle="table" data-striped="true">
+    <thead>
+        <tr>
+            <th>時間</th>
+            <th>新增會員數</th>
+            <th>新增定單數</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><?=$month?>月今天</td>
+            <td><?=($totalCustomer-$totalCustomerTM)?></td>
+            <td><?=($totalOrders-$totalOrdersTM)?></td>
+        </tr>
+        <tr>
+            <td><?=$lastMonth?>月今天</td>
+            <td><?=($totalCustomerSLM-$totalCustomerLM) ?></td>
+            <td><?=($totalOrdersSLM-$totalOrdersLM)?></td>
+        </tr>
+        <tr>
+            <td>成長</td>
+            <td><div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerSLM-$totalCustomerLM))*100/($totalCustomerSLM-$totalCustomerLM),2)?></div>%</div></td>
+            <td><div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersSLM-$totalOrdersLM))*100/($totalOrdersSLM-$totalOrdersLM),2)?></div>%</div></td>
+        </tr>
+    </tbody>
+</table>
 <hr/>
-<?=$month?>月新客訂單/回購訂單
-<h3>訂單數：<?=(($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)?> / <?=$numberReturnsThisMonth?> </h3>
-<h3>比例 ：<?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>% : <?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</h3>
+<h3><?=$month?>月今天 新客訂單/老會員訂單</h3>
+<div class="progress">
+  <div class="progress-bar progress-bar-success" role="progressbar" style="width:<?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%">
+    <div class="newOldOrders"><?=(($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)?></div>
+    <div class="newOldPercentage"><?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</div>
+  </div>
+  <div class="progress-bar progress-bar-danger" role="progressbar" style="width:<?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%">
+    <div class="newOldOrders"><?=$numberReturnsThisMonth?></div>
+    <div class="newOldPercentage"><?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</div>
+  </div>
+</div>
+
 <hr/>
 <h3>回購人數/總會員數：<?=$returnCustomer?>/<?=$totalCustomer?>  :  <?=round($returnCustomer*100/$totalCustomer,2)?>%</h3>
 <h3>重複訂單/總定單數：<?=$returnOrders?>/<?=$totalOrders?>  :  <?=round($returnOrders*100/$totalOrders,2)?>%</h3>
