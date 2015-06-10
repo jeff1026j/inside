@@ -75,6 +75,34 @@
       return $returnCustomers;
     }
 
+    function numberOfReturnOrdersThisMonth($endTime){
+      global $mysqli;
+      $endTimeSqlO1 = $endTime?'AND order_time <\''.$endTime.'\'':'';
+      $year_month = (new DateTime($endTime))->modify('first day of this month')->format('Ym');
+
+      //EXTRACT(YEAR_MONTH from (order_time)) format 201506
+      $sql='SELECT Count(*) FROM (
+            SELECT Orders.email, cohortDate , Orders.order_time
+            FROM  Orders 
+                  JOIN (SELECT email, EXTRACT(MONTH from (Min(order_time))) AS cohortDate 
+                        FROM  Orders 
+                        WHERE email <> "morning@ouregion.com" 
+                        GROUP  BY email) AS cohorts 
+                  ON Orders.email = cohorts.email 
+            WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(MONTH from (order_time)) '.$endTimeSqlO1.'
+            GROUP BY Orders.order_id ORDER BY Orders.email) as tablea;';
+
+      $stmt = $mysqli->prepare($sql); 
+      $stmt->bind_param('s',$year_month);
+
+      $stmt->execute();
+      $stmt->bind_result($mReturnOrders);
+      $stmt->fetch();
+      $stmt->close();
+
+      return $mReturnOrders;
+    }
+
     function getDistincOrders($endTime){
       global $mysqli;
 
@@ -148,10 +176,11 @@
     $endTime = $endTime?$endTime.' 23:59:59':null;
     $date = (new DateTime($endTime))->modify('first day of this month');
 
-    $endTimeThisMonth = $date->format('Y-m-d');$endTimeThisMonth = $endTimeThisMonth.' 23:59:59';
-    $endTimeLastMonth = $date->modify('first day of last month')->format('Y-m-d');$endTimeLastMonth=$endTimeLastMonth.' 23:59:59';
+    $endTimeThisMonth = $date->format('Y-m-d');$endTimeThisMonth = $endTimeThisMonth.' 00:00:00';
+    $endTimeLastMonth = $date->modify('first day of last month')->format('Y-m-d');$endTimeLastMonth=$endTimeLastMonth.' 00:00:00';
 
-    $endTimeLastMonthSameDay = (new DateTime($endTime))->modify('- 30 days')->format('Y-m-d');$endTimeLastMonthSameDay = $endTimeLastMonthSameDay.' 23:59:59';
+
+    $endTimeLastMonthSameDay = (new DateTime($endTime))->modify('-1 month')->format('Y-m-d');$endTimeLastMonthSameDay = $endTimeLastMonthSameDay.' 23:59:59';
 
     // echo $endTimeThisMonth;
     // echo $endTimeLastMonth;
@@ -174,6 +203,9 @@
     list($totalCustomerSLM, $totalOrdersSLM) = getDistincOrders($endTimeLastMonthSameDay);
 
     $numberReturns = getReturnUsersbyNumberReturn($endTime);
+
+    //compute this year month
+    $numberReturnsThisMonth = numberOfReturnOrdersThisMonth($endTime);
 ?>
 <?php
     // foreach ($holder as $h) {
@@ -185,7 +217,7 @@
     $returnOrders    = count($data);
     ksort($modeCount);
     // print_r($modeCount);
-
+    $month = (new DateTime($endTime))->modify('first day of this month')->format('m');
 ?>
 
 <!-- <ul class="list-inline">
@@ -197,11 +229,15 @@
     <li class="dataSegment"><div class="listtitle">回購週期</div><div class="listMiddle"><?=round($interval/86400,1)?>天</div></li>
 
 </ul> -->
-本月今天/上月今天
+
+<?=$month?>月今天/上月今天
 <h3>新增會員數：<?=($totalCustomer-$totalCustomerTM)?>/<?=($totalCustomerSLM-$totalCustomerLM) ?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalCustomer-$totalCustomerTM) - ($totalCustomerSLM-$totalCustomerLM))*100/($totalCustomerSLM-$totalCustomerLM),2)?></div>%</div></h3>
 <h3>新增定單數：<?=($totalOrders-$totalOrdersTM)?>/<?=($totalOrdersSLM-$totalOrdersLM)?>  成長 :  <div class="growthRate"><div class="percentage"><?=round((($totalOrders-$totalOrdersTM)-($totalOrdersSLM-$totalOrdersLM))*100/($totalOrdersSLM-$totalOrdersLM),2)?></div>%</div></h3>
 <hr/>
-
+<?=$month?>月新客訂單/回購訂單
+<h3>訂單數：<?=(($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)?> / <?=$numberReturnsThisMonth?> </h3>
+<h3>比例 ：<?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>% : <?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</h3>
+<hr/>
 <h3>回購人數/總會員數：<?=$returnCustomer?>/<?=$totalCustomer?>  :  <?=round($returnCustomer*100/$totalCustomer,2)?>%</h3>
 <h3>重複訂單/總定單數：<?=$returnOrders?>/<?=$totalOrders?>  :  <?=round($returnOrders*100/$totalOrders,2)?>%</h3>
 <hr/>
@@ -218,6 +254,10 @@
     <li class="dataSegment"><div class="listtitle">回購次數</div><div class="listMiddle"><?=$value['returnCustomer']?></div><div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div></li>
   <?php } ?>
 </ul>
+<div class='hidden'>endTime: <?=$endTime?></div>
+<div class='hidden'>endTimeThisMonth: <?=$endTimeThisMonth?></div>
+<div class='hidden'>endTimeLastMonth: <?=$endTimeLastMonth?></div>
+<div class='hidden'>endTimeLastMonthSameDay: <?=$endTimeLastMonthSameDay?></div>
 
 <h3>選擇結束週期：</h3>
 <div class="input-group date">

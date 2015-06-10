@@ -7,7 +7,7 @@ require_once (__ROOT__ . '/config/conn_db.php');
   $sql = 
   'SELECT Count(*) as orderNumbers, cohort_table.firstdate, cohort_table.PERIOD 
   FROM  (SELECT Orders.email, EXTRACT(YEAR_MONTH from cohorts.cohortdate) as firstdate, Orders.order_time, 
-         ABS(PERIOD_DIFF(EXTRACT(YEAR_MONTH from Orders.order_time), EXTRACT(YEAR_MONTH from cohorts.cohortdate))) AS PERIOD
+         (PERIOD_DIFF(EXTRACT(YEAR_MONTH from Orders.order_time), EXTRACT(YEAR_MONTH from cohorts.cohortdate))) AS PERIOD
          FROM  Orders 
                JOIN (SELECT email, Min(order_time) AS cohortDate 
                      FROM  Orders 
@@ -15,7 +15,7 @@ require_once (__ROOT__ . '/config/conn_db.php');
                ON Orders.email = cohorts.email 
                GROUP BY Orders.order_id ORDER BY Orders.email
          ) AS cohort_table
-  WHERE firstdate > 0
+  WHERE firstdate > 0 AND cohort_table.email <> "morning@ouregion.com" 
   GROUP BY cohort_table.firstdate, cohort_table.PERIOD;';
 
     
