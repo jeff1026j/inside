@@ -15,7 +15,7 @@ require_once (__ROOT__ . '/config/conn_db.php');
                ON Orders.email = cohorts.email 
                GROUP BY Orders.order_id ORDER BY Orders.email
          ) AS cohort_table
-  WHERE firstdate > 0 AND cohort_table.email <> "morning@ouregion.com" 
+  WHERE firstdate > 0 AND cohort_table.email <> "morning@ouregion.com" AND cohort_table.email <> "morning@ouregion.com" AND cohort_table.email <> "jpj0121@hotmail.com" AND cohort_table.email <> "jake.tzeng@gmail.com" AND cohort_table.email <> "iqwaynewang@gmail.com"    
   GROUP BY cohort_table.firstdate, cohort_table.PERIOD;';
 
     

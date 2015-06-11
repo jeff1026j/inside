@@ -1,6 +1,20 @@
 <?php
     require_once 'header.php';
-        
+    function errcodeInterpret($erCode){
+        switch ($erCode) {
+            case "01":
+                return "欄位格式順次錯誤";
+            case "02":
+                return "無訂單編號";
+            case "03":
+                return "訂單時間格式錯誤";
+            case "04":
+                return "無 email";
+            default:
+                return "無 error code";
+        }
+    }
+
     function timehandler($str){
         $result = '';
         if (strlen($str)<12) {
@@ -23,23 +37,44 @@
     }
     //file
     $rawfilename = isset($_FILES['csvfile']['tmp_name'])?$_FILES['csvfile']['tmp_name']:null;
-    $row = 1;
     //check csv file first
-    // if (($handle = fopen($rawfilename, "r")) !== FALSE) {
-    //     $i = 0;
-    //     while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
-    //         if($i!=0 && (!strcmp($data[4],'') || !strcmp(timehandler($data[1]),'0000-00-00 00:00:00') || !strcmp($data[21],'')))
-    //             header("Location: /"); //stop the db W
-    //         $i++;
-    //     }
-    // }
 
+    $fileValid = true;
+    $errorCode = "00";
 
-    //parse data~
     if (($handle = fopen($rawfilename, "r")) !== FALSE) {
+        $i = 0;
+        while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
+            if ($i==0) {
+                //check if the column is all the same
+                if ( !strstr($data[0]," 訂單狀態") || !strstr($data[1],' 下單時間') || !strstr($data[2],' 出貨時間') || !strstr($data[3],' 配達時間') || !strstr($data[4],' 訂單編號') || !strstr($data[6],' 商品名稱') || !strstr($data[9],' 數量') || !strstr($data[10],' 總售價')!=0  || !strstr($data[13],' 商品ID') || !strstr($data[16],' 購買人姓名')){ 
+                    
+                    $fileValid = false;
+                    $errorCode = "01";    
+                }
+            }elseif (strcasecmp($data[4],'')==0) {
+                # code...
+                $fileValid = false;
+                $errorCode = "02";
+            }elseif (strcasecmp(timehandler($data[1]),'0000-00-00 00:00:00')==0) {
+                # code...
+                $fileValid = false;
+                $errorCode = "03";
+            }elseif (strcasecmp($data[21],'')==0) {
+                # code...
+                $fileValid = false;
+                $errorCode = "04";
+            }
+            if(!$fileValid)
+                break;
+
+            $i++;
+        }
+    }
+    //parse data~
+    if (($handle = fopen($rawfilename, "r")) !== FALSE && $fileValid) {
         while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
             $num = count($data);
-            $row++;
             $order_id            = $data[4];
             $status              = $data[0];
             $order_time          = timehandler($data[1]);
@@ -72,6 +107,11 @@
         $mysqli->close();
     }
     unlink($rawfilename);
+
+    if (!$fileValid) {
+        echo '<h3> 上傳錯誤， 錯誤代碼：'.$errorCode.'<br/>錯誤解釋： '.errcodeInterpret($errorCode).'</h3>';
+    }
+
     require_once 'footer.php';
     //clear the cache first
     $ch = curl_init();
@@ -82,7 +122,9 @@
     curl_exec($ch);
     curl_close($ch);
    
-    header("Location: /");
+    if ($fileValid)
+        header("Location: /");
+
 ?>
 
 

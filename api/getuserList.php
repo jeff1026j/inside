@@ -17,14 +17,14 @@ if($numberOfReturn < 6 && $numberOfReturn > 0){
 }
 
 
-$sql="SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, GROUP_CONCAT(O2.product_name SEPARATOR ', ')
+$sql='SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, GROUP_CONCAT(O2.product_name SEPARATOR ", ")
 FROM (	SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer, MAX(O1.order_time) as max_order_time
 		FROM Orders as O1 
-		GROUP By O1.email HAVING(returnCustomer $sql_number ) 
+		GROUP By O1.email HAVING(returnCustomer '.$sql_number .') 
 		order by max_order_time
 		) uniO, Orders O2
-WHERE uniO.email = O2.email
-GROUP BY uniO.email;";
+WHERE uniO.email = O2.email AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"
+GROUP BY uniO.email;';
 
 $stmt = $mysqli->prepare($sql); 
 //$stmt->bind_param('d',$numberOfReturn);

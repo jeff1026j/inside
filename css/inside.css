@@ -41,7 +41,7 @@ body { padding-top: 70px; }
 }
 
 .progress{
-	height: 75px;
+	height: 100px;
 }
 
 .newOldPercentage{
@@ -51,4 +51,13 @@ body { padding-top: 70px; }
 .newOldOrders{
 	font-size: 45px;
   	line-height: 49px;
+}
+
+#OrdersAndMembersTable{
+	text-align: center;
+	font-size: 17px;
+}
+
+#OrdersAndMembersTable .th-inner {
+	text-align: center;
 }

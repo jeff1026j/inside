@@ -29,7 +29,7 @@
               FROM (SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
                     FROM Orders as O1  '.$endTimeSqlO1.'
                     GROUP By O1.email HAVING returnCustomer > 1 ) as O2, Orders O3             
-              WHERE O3.email = O2.email  '.$endTimeSqlO3.'
+              WHERE O3.email = O2.email AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"    '.$endTimeSqlO3.'
               GROUP BY O3.order_id 
               ORDER BY O3.email, O3.order_time;';
 
@@ -50,13 +50,13 @@
     function getReturnUsersbyNumberReturn($endTime){
       global $mysqli;
       //compute the endTime
-      $endTimeSqlO1 = $endTime?'where O1.order_time <\''.$endTime.'\'':'';
+      $endTimeSqlO1 = $endTime?'and O1.order_time <\''.$endTime.'\'':'';
       
       //get all return oders and users
       $sql = 'SELECT returnCustomer, COUNT(returnCustomer) as numberReturn
               FROM (
                     SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
-                    FROM Orders as O1  '.$endTimeSqlO1.'
+                    FROM Orders as O1  WHERE O1.email <> "morning@ouregion.com" AND O1.email <> "jpj0121@hotmail.com" AND O1.email <> "jake.tzeng@gmail.com" AND O1.email <> "iqwaynewang@gmail.com" '.$endTimeSqlO1.'
                     GROUP By O1.email HAVING returnCustomer > 1 
                     ) as O2
               GROUP BY returnCustomer
@@ -86,7 +86,7 @@
             FROM  Orders 
                   JOIN (SELECT email, EXTRACT(MONTH from (Min(order_time))) AS cohortDate 
                         FROM  Orders 
-                        WHERE email <> "morning@ouregion.com" 
+                        WHERE email <> "morning@ouregion.com" AND email <> "jpj0121@hotmail.com" AND email <> "jake.tzeng@gmail.com" AND email <> "iqwaynewang@gmail.com"   
                         GROUP  BY email) AS cohorts 
                   ON Orders.email = cohorts.email 
             WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(MONTH from (order_time)) '.$endTimeSqlO1.'
@@ -232,10 +232,10 @@
 </ul> -->
 
 <h3>新增訂單 & 會員</h3>
-<table data-toggle="table" data-striped="true">
+<table data-toggle="table" data-classes="table-condensed" data-striped="true" id="OrdersAndMembersTable">
     <thead>
         <tr>
-            <th>時間</th>
+            <th class="col-xs-2">時間</th>
             <th>新增會員數</th>
             <th>新增定單數</th>
         </tr>
@@ -262,10 +262,12 @@
 <h3><?=$month?>月今天 新客訂單/老會員訂單</h3>
 <div class="progress">
   <div class="progress-bar progress-bar-success" role="progressbar" style="width:<?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%">
+    <div>新客訂單</div>
     <div class="newOldOrders"><?=(($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)?></div>
     <div class="newOldPercentage"><?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</div>
   </div>
   <div class="progress-bar progress-bar-danger" role="progressbar" style="width:<?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%">
+    <div>老會員訂單</div>
     <div class="newOldOrders"><?=$numberReturnsThisMonth?></div>
     <div class="newOldPercentage"><?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</div>
   </div>
