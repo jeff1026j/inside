@@ -1,5 +1,26 @@
 <?php
     require_once 'header.php';
+    /* @param string $csvFile Path to the CSV file
+    * @return string Delimiter
+    */
+    function detectDelimiter($csvFile)
+    {
+        $delimiters = array(
+            ';' => 0,
+            ',' => 0,
+            "\t" => 0,
+            "|" => 0
+        );
+
+        $handle = fopen($csvFile, "r");
+        $firstLine = fgets($handle);
+        fclose($handle); 
+        foreach ($delimiters as $delimiter => &$count) {
+            $count = count(str_getcsv($firstLine, $delimiter));
+        }
+
+        return array_search(max($delimiters), $delimiters);
+    }
     function errcodeInterpret($erCode){
         switch ($erCode) {
             case "01":
@@ -42,9 +63,14 @@
     $fileValid = true;
     $errorCode = "00";
 
+    //detect delimeter first 
+    $del = detectDelimiter($rawfilename);
+
+    // echo "del:".$del."end";
+
     if (($handle = fopen($rawfilename, "r")) !== FALSE) {
         $i = 0;
-        while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000000, $del)) !== FALSE) {
             if ($i==0) {
                 //check if the column is all the same
                 if ( !strstr($data[0]," 訂單狀態") || !strstr($data[1],' 下單時間') || !strstr($data[2],' 出貨時間') || !strstr($data[3],' 配達時間') || !strstr($data[4],' 訂單編號') || !strstr($data[6],' 商品名稱') || !strstr($data[9],' 數量') || !strstr($data[10],' 總售價')!=0  || !strstr($data[13],' 商品ID') || !strstr($data[16],' 購買人姓名')){ 
@@ -73,7 +99,7 @@
     }
     //parse data~
     if (($handle = fopen($rawfilename, "r")) !== FALSE && $fileValid) {
-        while (($data = fgetcsv($handle, 1000000, ",")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000000, $del)) !== FALSE) {
             $num = count($data);
             $order_id            = $data[4];
             $status              = $data[0];

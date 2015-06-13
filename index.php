@@ -211,6 +211,8 @@
     // foreach ($holder as $h) {
     //     $returnCustomers[] = $h['username'];
     // }   
+    $newOrderGoal = 3700;
+    $oldOrderGoal = 2000;
     list($interval,$modeCount,$modeDay) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);
@@ -259,8 +261,8 @@
     </tbody>
 </table>
 <hr/>
-<h3><?=$month?>月今天 新客訂單/老會員訂單</h3>
-<div class="progress">
+<h3><?=$month?>月今天 新客訂單/老會員訂單 佔比</h3>
+<div class="progress ratioOrders">
   <div class="progress-bar progress-bar-success" role="progressbar" style="width:<?=100-round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%">
     <div>新客訂單</div>
     <div class="newOldOrders"><?=(($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)?></div>
@@ -270,6 +272,21 @@
     <div>老會員訂單</div>
     <div class="newOldOrders"><?=$numberReturnsThisMonth?></div>
     <div class="newOldPercentage"><?=round($numberReturnsThisMonth*100/($totalOrders-$totalOrdersTM),2)?>%</div>
+  </div>
+</div>
+
+<h3>新客達成目標</h3>
+<div class="progress progressGoal">
+  <div class="progress-bar" role="progressbar" aria-valuenow="60"
+  aria-valuemin="0" aria-valuemax="100" style="width:<?=round((($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)*100/$newOrderGoal,2)?>%">
+    <h4><?=round((($totalOrders-$totalOrdersTM)-$numberReturnsThisMonth)*100/$newOrderGoal,2)?>% 完成</h4>
+  </div>
+</div>
+<h3>舊客達成目標</h3>
+<div class="progress progressGoal">
+  <div class="progress-bar" role="progressbar" aria-valuenow="60"
+  aria-valuemin="0" aria-valuemax="100" style="width:<?=round($numberReturnsThisMonth*100/$oldOrderGoal,2)?>%">
+    <h4><?=round($numberReturnsThisMonth*100/$oldOrderGoal,2)?>% 完成</h4>
   </div>
 </div>
 
@@ -301,6 +318,19 @@
 </div>
 
 <script type="text/javascript">
+
+    //change goal progress color
+    $( ".progress.progressGoal .progress-bar" ).each(function( index ) {
+      var f = $(this).width() / $(this).parent().width() * 100;  
+      if (f<50) {
+        $(this).addClass("progress-bar-danger");
+      }else{
+        $(this).addClass("progress-bar-success");
+      }
+
+    });
+    
+
     google.load('visualization', '1', {packages: ['corechart']});
     google.setOnLoadCallback(drawChart);
 
