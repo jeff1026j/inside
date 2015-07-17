@@ -8,8 +8,8 @@
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">購買名單</a></li>
     <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">久久未買</a></li>
-    <!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-    <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
+    <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Cohort名單</a></li>
+    <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
   </ul>
 
   <!-- Tab panes -->
@@ -20,26 +20,26 @@
         <h4>購買次數：</h4>
         <!--<form class="form-inline">-->
             <div class="form-group">
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1" checked="checked"> 1
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="1"> 1
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2"> 2
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="2" checked="checked"> 2
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="3"> 3
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="3" checked="checked"> 3
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="4"> 4
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="4" checked="checked"> 4
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="5"> 5
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="5" checked="checked"> 5
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="9999"> 以上
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="9999" checked="checked"> 以上
                 </label>
-                <label class="radio-inline">
-                <input type="radio" name="inlineRadioOptions" id="inlineRadio4" value="0"> 全部
+                <label class="checkbox-inline">
+                <input type="checkbox" name="inlineCheckboxOptions" value="0"> 全部
                 </label>
                 <!-- <button class="btn btn-warning Return export-button">Export</button> -->
            </div>
@@ -103,12 +103,26 @@
             </thead>
         </table>
 
-
-
-
     </div>
-    <!-- <div role="tabpanel" class="tab-pane" id="messages">...</div>
-    <div role="tabpanel" class="tab-pane" id="settings">...</div> -->
+    <div role="tabpanel" class="tab-pane" id="messages">
+        <h2>Cohort名單</h2>
+        <br/> 
+        <h4>首購日期：</h4>
+        <div class="input-group date">
+          <input type="text" id="cohortDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+        </div>
+        <table data-toggle="table" data-url="/api/getCohortUserList.php" data-search="true" id="cohortTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+            <thead>
+                <tr>
+                    <th data-field="email">Email</th>
+                    <th data-field="user_name">姓名</th>
+                    <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
+                    <th data-field="product" class="no_export">過往購買商品</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!--<div role="tabpanel" class="tab-pane" id="settings">...</div> -->
   </div>
 
 </div>
@@ -116,11 +130,16 @@
 <script>
     $( document ).ready(function() {
         var defaultUrl="/api/getuserList.php";
-        $("input:radio[name=inlineRadioOptions]").click(function() {
-            var value = $(this).val();
+        $("input:checkbox[name=inlineCheckboxOptions]").click(function() {
+            // var value = $(this).val();
+            var values = $('input:checkbox[name=inlineCheckboxOptions]:checked').map(function () {
+              return this.value;
+            }).get(); // ["18", "55", "10"]
+
+            // console.log();
             // console.log('yyyydsdsdyyy');
             $('#productTable').bootstrapTable('refresh', {
-               url: defaultUrl+'?numberOfReturn='+value
+               url: defaultUrl+'?numberOfReturn='+encodeURIComponent(JSON.stringify(values))
             });
         });
         // This must be a hyperlink
@@ -163,7 +182,7 @@
         });
 
         //for date picker
-        $('.input-group.date').datepicker( {
+        $('#currentDate').datepicker( {
             format: "yyyy-mm-dd",
             orientation: "top auto",
             todayHighlight: true,
@@ -172,7 +191,25 @@
             // console.log(e.date);
             // window.location = "/?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
 
-        });;      
+        });
+
+        $('#cohortDate').datepicker({
+            format: "yyyymm",
+            minViewMode: 1,
+            language: "zh-TW",
+            autoclose: true
+            
+        }).on("changeDate", function(e){
+            var getCohortListURL="/api/getCohortUserList.php";
+            // window.location = "/?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
+            var cohortDate = $('#cohortDate').val();
+            var url = getCohortListURL+'?cohortDate='+cohortDate ;
+            console.log(url);
+            $('#cohortTable').bootstrapTable('refresh', {
+                url: url
+            });
+
+        });      
     });     
 </script>
 

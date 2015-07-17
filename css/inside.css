@@ -64,3 +64,13 @@ body { padding-top: 70px; }
 #OrdersAndMembersTable .th-inner {
 	text-align: center;
 }
+
+.upNumberIC{
+  font-size: 8pt;
+  color: lightgray;
+  position: absolute;
+  margin-top: -9px;
+  /* margin-bottom: 12px; */
+  margin-left: 42px;
+	
+}

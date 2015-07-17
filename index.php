@@ -304,7 +304,7 @@
       $lastNumberofReturn += $value['numberReturn'];
       $overNumberofReturn = $value['numberReturn'] + $returnCustomer - $lastNumberofReturn;
     ?>
-    <li class="dataSegment"><div class="listtitle">回購次數</div><div class="listMiddle"><?=$value['returnCustomer']?></div><div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div></li>
+    <li class="dataSegment"><div class="listtitle">購買次數</div><div class="listMiddle"><?=$value['returnCustomer']?><div class="upNumberIC">(以上)</div></div><div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div></li>
   <?php } ?>
 </ul>
 <div class='hidden'>endTime: <?=$endTime?></div>
