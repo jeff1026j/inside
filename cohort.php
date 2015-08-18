@@ -26,18 +26,24 @@
 
 <!--</form>-->
 <br/>
-<table id="cohortTable">
+<table id="cohortTable" >
     <thead>
         <tr>
             <?php   
                 foreach ($data[0] as $key => $value) {
-                    echo '<th data-field="'.$key.'">'.$value.'</th>';
+                    // if ($value == "201412" || $value == "201501" || $value == "201502") {
+                        
+                    // }else{
+                        echo '<th data-field="'.$key.'">'.$value.'</th>';
+                    // }
+                    
             
                 }
                 //remove the first array to present data
                 unset($data[0]); // remove item at index 0
                 $json = json_encode(array_values($data)); // 'reindex' array
             ?>
+        </tr>
     </thead>
 </table>
 
@@ -47,9 +53,12 @@
         var data = <?=$json?>;
 
         $table = $('#cohortTable');
+        
         $table.bootstrapTable({
             data: data
         });
+        
+        
 
         $("#export-button").on('click', function (event) {
         // CSV
@@ -59,6 +68,21 @@
             window.location.href = 'data:text/csv;charset=UTF-8,'
                                  + encodeURIComponent(csv);
         });
+        // $table.bootstrapTable('remove', {field: 'Month', values: ["201412", "201501"]})
+        // $table.bootstrapTable('hideRow', {index:0});
+        // $table.bootstrapTable('hideRow', {index:1});
+        // $table.bootstrapTable('hideRow', {index:2});
+
+        // function avgFormatter(data) {
+        //     var total = 0;
+        //     // $.each(data, function (i, row) {
+        //     //     // total += +(row.price.substring(1));
+
+        //     // });
+        //     return '$' + total;
+        // }
+
+
     });     
     
 </script>

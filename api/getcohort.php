@@ -20,7 +20,8 @@ require_once (__ROOT__ . '/config/conn_db.php');
 
     
   $stmt = $mysqli->query($sql); 
-  $data = $cohort = array();
+  $cohortResult = $cohortaAveragePerMonth = $data = $cohort = array();
+  
 
 //   +--------------+-----------+--------+
 // | orderNumbers | firstdate | PERIOD |
@@ -39,9 +40,17 @@ require_once (__ROOT__ . '/config/conn_db.php');
 
   while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
     // echo '$substr: '.substr($row['firstdate'], 0, 4).'-'.substr($row['firstdate'], 4,strlen($row['firstdate'])-4).'<br/>';
+    if ($row['firstdate']=="201412" || $row['firstdate']=="201501") {
+      continue;
+    }
+    // parse the first date new user come
     $firstDateMonth = DateTime::createFromFormat('Y-m-d', substr($row['firstdate'], 0, 4).'-'.substr($row['firstdate'], 4,strlen($row['firstdate'])-4).'-'.'01');
     // echo '$firstDateMonth: '.$firstDateMonth->format('Ym').'<br/>';
+
+    // plus perios months to to that month order
     $firstDateMonth->modify( 'first day of + '.$row['PERIOD'].' months' );
+
+    //so you got the 
     $returnDate = $firstDateMonth->format('Ym');
     //echo 'PERIOD: '.$row['PERIOD'].'<br/>firstdate: '.$row['firstdate'].'<br/>$returnDate: '.$returnDate.'<br/>orderNumbers: '.$row['orderNumbers'].'<br/><br/>';
     //prepare the first cohort array  
@@ -49,17 +58,31 @@ require_once (__ROOT__ . '/config/conn_db.php');
 
     $cohort[$row['firstdate']][$returnDate] = !strcmp($row['firstdate'],$returnDate)?$row['orderNumbers']:$row['orderNumbers'].'  ('.round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2).'%)';
 
-  }
+    //later to compute average
+    if (strcmp($row['firstdate'],$returnDate)) {
+      $cohortaAveragePerMonth[$returnDate]['sum'] += $row['orderNumbers']*round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2);
+      $cohortaAveragePerMonth[$returnDate]['impact'] += $row['orderNumbers'];
+    }
+       
 
-  $cohortResult = array();
+  }
+  
+  //compute the average
+  foreach ($cohortaAveragePerMonth as $key => $value) {
+    //print_r($value);
+    $cohortaAverage[$key] = round($value['sum']/$value['impact'],2).'%';
+
+  }  
 
   foreach ($cohort as $key => $value) {
     //print_r($value);
     $cohortResult[] = array('Month' =>$key) + $value;
-  }
-  
-  //print_r($cohortResult);
 
+  }
+  //add the last line to show average
+  $cohortResult[] = array('Month' => 'AVG') + $cohortaAverage;
+  
+  
   $stmt->close();
   $mysqli->close();
 

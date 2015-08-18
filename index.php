@@ -25,7 +25,7 @@
       // echo $endTimeSqlO3;
 
       //get all return oders and users
-      $sql = 'SELECT O3.email,  O3.order_id, UNIX_TIMESTAMP(O3.order_time) as order_time            
+      $sql = 'SELECT O3.email,  O3.order_id, UNIX_TIMESTAMP(O3.order_time) as order_time, SUM(product_price) as order_price            
               FROM (SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
                     FROM Orders as O1  '.$endTimeSqlO1.'
                     GROUP By O1.email HAVING returnCustomer > 1 ) as O2, Orders O3             
@@ -125,6 +125,8 @@
       $counter = 0;
       $mainCounter = 0;
       $temp_interval = 0;
+      $temp_order_price = 0;
+      $order_price = 0;
       $arraycount = 1;
       $modeDay = 3;
       $modeCount = array();
@@ -133,30 +135,42 @@
       foreach ($data as $value) {
 
           if ($email == $value['email']) {
+              //same user, different order
+
               //compute time difference to pre one
               if(abs($value['order_time'] - $order_time) > 86400*2){
+                //if order_time difference is bigger than 2 days
                   $temp_interval += abs($value['order_time'] - $order_time);
+                  $temp_order_price += $value['order_price'];
                   $counter ++; 
               }
               $order_time = $value['order_time'];
 
-
+              //only for the last order
               if ($arraycount == count($data)) {
                   @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
-                  $interval += $temp_interval/$counter;
+                  $interval += ($temp_interval/$counter);
+                  $order_price += ($temp_order_price/$temp_interval);
+                  $temp_order_price = 0;
                   $temp_interval = 0;
                   $mainCounter++;
               }
 
           }else{
+            //different user
               $email = $value['email'];
               $order_time = $value['order_time'];
               
               if ($counter > 0) {
                   @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
-                  $interval += $temp_interval/$counter;
+                  $interval += ($temp_interval/$counter);
+                  // if ($temp_interval > 86400*30*5 && $counter > 3 ) {
+                    $order_price += ($temp_order_price/$temp_interval);  
+                    $mainCounter++;
+                  // }
+                  $temp_order_price = 0;
                   $temp_interval = 0;
-                  $mainCounter++;
+                  
               }
               $counter = 0;
           }
@@ -166,9 +180,10 @@
       }    
 
       $interval = $interval/$mainCounter;
+      $order_price = $order_price/$mainCounter;
       
 
-      return array($interval,$modeCount,$modeDay);
+      return array($interval,$modeCount,$modeDay,$order_price);
     }
     
     
@@ -211,9 +226,11 @@
     // foreach ($holder as $h) {
     //     $returnCustomers[] = $h['username'];
     // }   
-    $newOrderGoal = 3700;
-    $oldOrderGoal = 2000;
-    list($interval,$modeCount,$modeDay) = returnInterval($data);
+
+
+    $newOrderGoal = 5750;
+    $oldOrderGoal = 2250;
+    list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);
     $returnOrders    = count($data);
@@ -296,7 +313,8 @@
 <hr/>
 <h3>每人回購次數： <?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?></h3>
 <h3>每人回購週期(平均)： <?=round($interval/86400,1)?>天</h3>
-
+<h3>每人每月貢獻金額(假設老顧客每月回頭購買)： $<?=round($order_price*86400*30)?></h3>
+<!-- 如果假設不是每月回頭購買：回購 user x 月份數 x  -->
 <ul class="list-inline">
 <?php 
   $lastNumberofReturn = 0;
