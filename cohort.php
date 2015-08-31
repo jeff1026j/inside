@@ -3,8 +3,15 @@
     // $json = file_get_contents('http://inside.morningshop.tw/api/getcohort.php'); // this WILL do an http request for you
     // $data = json_decode($json,true);
     //clear the cache first
+    
+
+    $endTime = isset($_GET['endtime'])?$_GET['endtime']:null;
+    
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://'.$_SERVER['HTTP_HOST'].'/api/getcohort.php');
+
+    $url = $endTime?'http://'.$_SERVER['HTTP_HOST'].'/api/getcohort.php?endtime='.$endTime:'http://'.$_SERVER['HTTP_HOST'].'/api/getcohort.php';
+
+    curl_setopt($ch, CURLOPT_URL, $url);
     //curl_setopt($ch, CURLOPT_POST, true); // 啟用POST
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_USERPWD, 'morningshop' . ":" . 'goodmorning');
@@ -22,8 +29,13 @@
 <h4>Chris:Hook老顧客，Jake：招回購新會員，Jeff：調產品結構，JPG：商品力、不缺貨，Chi：文案風格形象</h4>
 <!--<form class="form-inline">-->
 <br/>
+<h3>選擇觀測日期：</h3>
+<div class="input-group date">
+  <input type="text" class="form-control" value="<?=$endTime?>"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+</div>
+<br/>
 <button class="btn btn-info" id="export-button">Export</button>
-
+<br/>
 <!--</form>-->
 <br/>
 <table id="cohortTable" >
@@ -68,6 +80,17 @@
             window.location.href = 'data:text/csv;charset=UTF-8,'
                                  + encodeURIComponent(csv);
         });
+        $('.input-group.date').datepicker({
+            format: "yyyy-mm-dd",
+            orientation: "top auto",
+            todayHighlight: true,
+            autoclose: true
+        }).on("changeDate", function(e){
+            // console.log(e.date);
+            window.location = "/cohort.php?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
+
+        });
+
         // $table.bootstrapTable('remove', {field: 'Month', values: ["201412", "201501"]})
         // $table.bootstrapTable('hideRow', {index:0});
         // $table.bootstrapTable('hideRow', {index:1});

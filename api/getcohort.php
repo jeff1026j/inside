@@ -3,6 +3,14 @@ define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
 
+  function isValidDateTimeString($str_dt, $str_dateformat) {
+        $date = DateTime::createFromFormat($str_dateformat, $str_dt);
+        return $date && DateTime::getLastErrors()["warning_count"] == 0 && DateTime::getLastErrors()["error_count"] == 0;
+  }
+  $endTime = isset($_GET['endtime'])&&isValidDateTimeString($_GET['endtime'],'Y-m-d')?$_GET['endtime']:null;
+  $endTime = $endTime?$endTime.' 23:59:59':null;
+
+  $timeSql = $endTime?'WHERE Orders.order_time < "'. $endTime .'"':null;
 //get all return oders and users
   $sql = 
   'SELECT Count(*) as orderNumbers, cohort_table.firstdate, cohort_table.PERIOD 
@@ -12,13 +20,14 @@ require_once (__ROOT__ . '/config/conn_db.php');
                JOIN (SELECT email, Min(order_time) AS cohortDate 
                      FROM  Orders 
                      GROUP  BY email) AS cohorts 
-               ON Orders.email = cohorts.email 
+               ON Orders.email = cohorts.email ' .
+               $timeSql. '
                GROUP BY Orders.order_id ORDER BY Orders.email
          ) AS cohort_table
   WHERE firstdate > 0 AND cohort_table.email <> "morning@ouregion.com" AND cohort_table.email <> "morning@ouregion.com" AND cohort_table.email <> "jpj0121@hotmail.com" AND cohort_table.email <> "jake.tzeng@gmail.com" AND cohort_table.email <> "iqwaynewang@gmail.com"    
   GROUP BY cohort_table.firstdate, cohort_table.PERIOD;';
 
-    
+  
   $stmt = $mysqli->query($sql); 
   $cohortResult = $cohortaAveragePerMonth = $data = $cohort = array();
   
@@ -60,8 +69,8 @@ require_once (__ROOT__ . '/config/conn_db.php');
 
     //later to compute average
     if (strcmp($row['firstdate'],$returnDate)) {
-      $cohortaAveragePerMonth[$returnDate]['sum'] += $row['orderNumbers']*round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2);
-      $cohortaAveragePerMonth[$returnDate]['impact'] += $row['orderNumbers'];
+      @$cohortaAveragePerMonth[$returnDate]['sum'] += $row['orderNumbers']*round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2);
+      @$cohortaAveragePerMonth[$returnDate]['impact'] += $row['orderNumbers'];
     }
        
 

@@ -75,10 +75,10 @@
       return $returnCustomers;
     }
 
-    function numberOfReturnOrdersThisMonth($endTime){
+    function numberOfReturnOrdersThisMonth($endTime, $endTimeThisMonth){
       global $mysqli;
       $endTimeSqlO1 = $endTime?'AND order_time <\''.$endTime.'\'':'';
-      $year_month = (new DateTime($endTime))->modify('first day of this month')->format('Ym');
+      $year_month = (new DateTime($endTimeThisMonth))->modify('first day of this month')->format('Ym');
 
       //EXTRACT(YEAR_MONTH from (order_time)) format 201506
       $sql='SELECT Count(*) FROM (
@@ -150,7 +150,7 @@
               if ($arraycount == count($data)) {
                   @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
                   $interval += ($temp_interval/$counter);
-                  $order_price += ($temp_order_price/$temp_interval);
+                  // $order_price += ($temp_order_price/$temp_interval);
                   $temp_order_price = 0;
                   $temp_interval = 0;
                   $mainCounter++;
@@ -165,7 +165,7 @@
                   @$modeCount[floor($temp_interval/$counter/$modeDay/86400)]++;
                   $interval += ($temp_interval/$counter);
                   // if ($temp_interval > 86400*30*5 && $counter > 3 ) {
-                    $order_price += ($temp_order_price/$temp_interval);  
+                    // $order_price += ($temp_order_price/$temp_interval);  
                     $mainCounter++;
                   // }
                   $temp_order_price = 0;
@@ -180,31 +180,38 @@
       }    
 
       $interval = $interval/$mainCounter;
-      $order_price = $order_price/$mainCounter;
+      // $order_price = $order_price/$mainCounter;
       
 
       return array($interval,$modeCount,$modeDay,$order_price);
     }
     
     
-    $endTime = isset($_GET['endtime'])&&isValidDateTimeString($_GET['endtime'],'Y-m-d')?$_GET['endtime']:null;
-    $endTime = $endTime?$endTime.' 23:59:59':null;
-    $date = (new DateTime($endTime))->modify('first day of this month');
+    $date = isset($_GET['endtime'])&&isValidDateTimeString($_GET['endtime'],'Y-m-d')?$_GET['endtime']:null;
 
-    $endTimeThisMonth = $date->format('Y-m-d');$endTimeThisMonth = $endTimeThisMonth.' 00:00:00';
-    $endTimeLastMonth = $date->modify('first day of last month')->format('Y-m-d');$endTimeLastMonth=$endTimeLastMonth.' 00:00:00';
+    $endTimeLastMonthSameDay = (new DateTime($date))->modify('-1 month')->modify('+1 day')->format('Y-m-d');$endTimeLastMonthSameDay = $endTimeLastMonthSameDay.' 00:00:00';
+    $endTime = (new DateTime($date))->modify('+1 day')->format('Y-m-d');$endTime.' 00:00:00';
+
+    $endTimeThisMonth = (new DateTime($date))->modify('first day of this month')->format('Y-m-d');$endTimeThisMonth = $endTimeThisMonth.' 00:00:00';
+    $endTimeLastMonth = (new DateTime($date))->modify('first day of this month')->modify('first day of last month')->format('Y-m-d');$endTimeLastMonth=$endTimeLastMonth.' 00:00:00';
 
 
-    $endTimeLastMonthSameDay = (new DateTime($endTime))->modify('-1 month')->format('Y-m-d');$endTimeLastMonthSameDay = $endTimeLastMonthSameDay.' 23:59:59';
 
-    // echo $endTimeThisMonth;
-    // echo $endTimeLastMonth;
-    
+     echo '$date: '. $date;
+     echo '<br/>$endTimeLastMonthSameDay: '. $endTimeLastMonthSameDay;    
+
+     echo '<br/>$endTime: '. $endTime;
+     echo '<br/>$endTimeLastMonth.: '. $endTimeLastMonth;
+     echo '<br/>$endTimeThisMonth: ' .$endTimeThisMonth;
+
     //get current customer
     //endTime : 6/10
     list($data, $returnCustomers) = getAllReturnOrders($endTime);
     list($totalCustomer, $totalOrders) = getDistincOrders($endTime);
     
+    // echo '$totalCustomer: ' .$totalCustomer.'<br>';
+    // echo '$totalOrders: ' .$totalOrders.'<br>'; 
+
     //endTimeThisMonth : 6/1
     //list($dataTM, $returnCustomersTM) = getAllReturnOrders($endTimeThisMonth);
     list($totalCustomerTM, $totalOrdersTM) = getDistincOrders($endTimeThisMonth);
@@ -220,7 +227,7 @@
     $numberReturns = getReturnUsersbyNumberReturn($endTime);
 
     //compute this year month
-    $numberReturnsThisMonth = numberOfReturnOrdersThisMonth($endTime);
+    $numberReturnsThisMonth = numberOfReturnOrdersThisMonth($endTime,$endTimeThisMonth);
 ?>
 <?php
     // foreach ($holder as $h) {
@@ -236,8 +243,8 @@
     $returnOrders    = count($data);
     ksort($modeCount);
     // print_r($modeCount);
-    $month = (new DateTime($endTime))->modify('first day of this month')->format('m');
-    $lastMonth = (new DateTime($endTime))->modify('first day of last month')->format('m');
+    $month = (new DateTime($date))->modify('first day of this month')->format('m');
+    $lastMonth = (new DateTime($date))->modify('first day of this month')->modify('first day of last month')->format('m');
 ?>
 
 <!-- <ul class="list-inline">
@@ -313,7 +320,7 @@
 <hr/>
 <h3>每人回購次數： <?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?></h3>
 <h3>每人回購週期(平均)： <?=round($interval/86400,1)?>天</h3>
-<h3>每人每月貢獻金額(假設老顧客每月回頭購買)： $<?=round($order_price*86400*30)?></h3>
+<!-- <h3>每人每月貢獻金額(假設老顧客每月回頭購買)： $<?=round($order_price*86400*30)?></h3> -->
 <!-- 如果假設不是每月回頭購買：回購 user x 月份數 x  -->
 <ul class="list-inline">
 <?php 
@@ -332,7 +339,7 @@
 
 <h3>選擇結束週期：</h3>
 <div class="input-group date">
-  <input type="text" class="form-control" value="<?=$endTime?>"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+  <input type="text" class="form-control" value="<?=$date?>"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
 </div>
 
 <script type="text/javascript">
