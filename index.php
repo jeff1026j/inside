@@ -1,5 +1,9 @@
 <?php
     require_once 'header.php';
+    define('__ROOT__', dirname(__FILE__));
+    require_once (__ROOT__ . '/api/functions.php');
+    require_once (__ROOT__ . '/config/deconfig.php');
+
     /**
      * Check if a string is a valid date(time)
      *
@@ -25,14 +29,14 @@
       // echo $endTimeSqlO3;
 
       //get all return oders and users
-      $sql = 'SELECT O3.email,  O3.order_id, UNIX_TIMESTAMP(O3.order_time) as order_time, SUM(product_price) as order_price            
-              FROM (SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
+      $sql = 'SELECT O3.email, O3.'.cohortkey.' , O3.order_id, UNIX_TIMESTAMP(O3.order_time) as order_time, SUM(product_price) as order_price            
+              FROM (SELECT O1.email,O1.'.cohortkey.', COUNT(DISTINCT O1.order_id) as returnCustomer                    
                     FROM Orders as O1  '.$endTimeSqlO1.'
-                    GROUP By O1.email HAVING returnCustomer > 1 ) as O2, Orders O3             
-              WHERE O3.email = O2.email AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"    '.$endTimeSqlO3.'
+                    GROUP By O1.'.cohortkey.' HAVING returnCustomer > 1 ) as O2, Orders O3             
+              WHERE O3.'.cohortkey.' = O2.'.cohortkey.' AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"    '.$endTimeSqlO3.'
               GROUP BY O3.order_id 
-              ORDER BY O3.email, O3.order_time;';
-
+              ORDER BY O3.'.cohortkey.', O3.order_time;';
+      
 
       $stmt = $mysqli->query($sql); 
       $data = array();
@@ -55,9 +59,9 @@
       //get all return oders and users
       $sql = 'SELECT returnCustomer, COUNT(returnCustomer) as numberReturn
               FROM (
-                    SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer                    
+                    SELECT O1.'.cohortkey.', COUNT(DISTINCT O1.order_id) as returnCustomer                    
                     FROM Orders as O1  WHERE O1.email <> "morning@ouregion.com" AND O1.email <> "jpj0121@hotmail.com" AND O1.email <> "jake.tzeng@gmail.com" AND O1.email <> "iqwaynewang@gmail.com" '.$endTimeSqlO1.'
-                    GROUP By O1.email HAVING returnCustomer > 1 
+                    GROUP By O1.'.cohortkey.' HAVING returnCustomer > 1 
                     ) as O2
               GROUP BY returnCustomer
        ;';
@@ -82,15 +86,15 @@
 
       //EXTRACT(YEAR_MONTH from (order_time)) format 201506
       $sql='SELECT Count(*) FROM (
-            SELECT Orders.email, cohortDate , Orders.order_time
-            FROM  Orders 
-                  JOIN (SELECT email, EXTRACT(MONTH from (Min(order_time))) AS cohortDate 
-                        FROM  Orders 
-                        WHERE email <> "morning@ouregion.com" AND email <> "jpj0121@hotmail.com" AND email <> "jake.tzeng@gmail.com" AND email <> "iqwaynewang@gmail.com"   
-                        GROUP  BY email) AS cohorts 
-                  ON Orders.email = cohorts.email 
-            WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(MONTH from (order_time)) '.$endTimeSqlO1.'
-            GROUP BY Orders.order_id ORDER BY Orders.email) as tablea;';
+              SELECT Orders.'.cohortkey.', cohortDate , Orders.order_time
+              FROM  Orders 
+                    JOIN (SELECT '.cohortkey.', EXTRACT(MONTH from (Min(order_time))) AS cohortDate 
+                          FROM  Orders 
+                          WHERE email <> "morning@ouregion.com" AND email <> "jpj0121@hotmail.com" AND email <> "jake.tzeng@gmail.com" AND email <> "iqwaynewang@gmail.com"   
+                          GROUP  BY '.cohortkey.') AS cohorts 
+                    ON Orders.'.cohortkey.' = cohorts.'.cohortkey.'
+              WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(MONTH from (order_time)) '.$endTimeSqlO1.'
+            GROUP BY Orders.order_id ORDER BY Orders.'.cohortkey.') as tablea;';
 
       $stmt = $mysqli->prepare($sql); 
       $stmt->bind_param('s',$year_month);
@@ -128,7 +132,7 @@
       $temp_order_price = 0;
       $order_price = 0;
       $arraycount = 1;
-      $modeDay = 3;
+      $modeDay = 3; // day period to group return Interval
       $modeCount = array();
       $data = $orders;
 
@@ -197,12 +201,12 @@
 
 
 
-     echo '$date: '. $date;
-     echo '<br/>$endTimeLastMonthSameDay: '. $endTimeLastMonthSameDay;    
+     // echo '$date: '. $date;
+     // echo '<br/>$endTimeLastMonthSameDay: '. $endTimeLastMonthSameDay;    
 
-     echo '<br/>$endTime: '. $endTime;
-     echo '<br/>$endTimeLastMonth.: '. $endTimeLastMonth;
-     echo '<br/>$endTimeThisMonth: ' .$endTimeThisMonth;
+     // echo '<br/>$endTime: '. $endTime;
+     // echo '<br/>$endTimeLastMonth.: '. $endTimeLastMonth;
+     // echo '<br/>$endTimeThisMonth: ' .$endTimeThisMonth;
 
     //get current customer
     //endTime : 6/10
@@ -235,8 +239,8 @@
     // }   
 
 
-    $newOrderGoal = 5750;
-    $oldOrderGoal = 2250;
+    $newOrderGoal = 6527;
+    $oldOrderGoal = 3473;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);
@@ -318,20 +322,33 @@
 <h3>回購人數/總會員數：<?=$returnCustomer?>/<?=$totalCustomer?>  :  <?=round($returnCustomer*100/$totalCustomer,2)?>%</h3>
 <h3>重複訂單/總定單數：<?=$returnOrders?>/<?=$totalOrders?>  :  <?=round($returnOrders*100/$totalOrders,2)?>%</h3>
 <hr/>
-<h3>每人回購次數： <?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?></h3>
 <h3>每人回購週期(平均)： <?=round($interval/86400,1)?>天</h3>
 <!-- <h3>每人每月貢獻金額(假設老顧客每月回頭購買)： $<?=round($order_price*86400*30)?></h3> -->
 <!-- 如果假設不是每月回頭購買：回購 user x 月份數 x  -->
 <ul class="list-inline">
 <?php 
   $lastNumberofReturn = 0;
+  //Medium Number of return orders
+  $medReturnOrder = 0;
   foreach ($numberReturns as $value) { 
       $lastNumberofReturn += $value['numberReturn'];
       $overNumberofReturn = $value['numberReturn'] + $returnCustomer - $lastNumberofReturn;
+      
+      if ($lastNumberofReturn*100/$returnCustomer > 50 && $medReturnOrder==0) {
+          $medReturnOrder = $value['returnCustomer'];
+      }
     ?>
-    <li class="dataSegment"><div class="listtitle">購買次數</div><div class="listMiddle"><?=$value['returnCustomer']?><div class="upNumberIC">(以上)</div></div><div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div></li>
+    <li class="dataSegment">
+      <div class="listtitle">購買次數</div>
+      <div class="listMiddle"><?=$value['returnCustomer']?>
+        <div class="upNumberIC">(以上)</div>
+      </div>
+      <div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div>
+    </li>
   <?php } ?>
 </ul>
+<h3>每人回購次數： <?=round(($returnOrders-$returnCustomer)/$returnCustomer,2)?> (平均) / <?=$medReturnOrder-1?> (中位數)</h3>
+
 <div class='hidden'>endTime: <?=$endTime?></div>
 <div class='hidden'>endTimeThisMonth: <?=$endTimeThisMonth?></div>
 <div class='hidden'>endTimeLastMonth: <?=$endTimeLastMonth?></div>

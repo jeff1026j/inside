@@ -17,7 +17,7 @@ $product_id = isset($_GET['productid'])?$_GET['productid']:null;
     	    (SELECT MONTH(order_time), DAY(order_time),SUM(product_quantity) as sum_qty
 	         FROM Orders O2, 
 	              (Select MAX(O1.order_time) as max_time from Orders O1 where product_id=?) as max_o
-    	     WHERE product_id = ? and O2.order_time >  DATE(max_o.max_time) - INTERVAL 4 WEEK
+    	     WHERE product_id = ? and O2.order_time >  DATE(max_o.max_time) - INTERVAL 6 WEEK
 	         GROUP BY MONTH(order_time), DAY(order_time)
 	         ) y
 	         ORDER BY sum_qty

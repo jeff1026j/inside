@@ -3,6 +3,7 @@
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
+require_once (__ROOT__ . '/config/deconfig.php');
 
 $currentDate = (isset($_GET['currentDate']) && $_GET['currentDate']!='')?$_GET['currentDate']:date('Y-m-d');
 $maxInterval = isset($_GET['maxInterval'])?$_GET['maxInterval']:0;
@@ -22,14 +23,14 @@ $minDate = $minDate->modify( '- '.$minInterval.' days')->format('Y-m-d');
 // echo "maxDate: ".$maxDate.";   minDate: ".$minDate.";   cd: ".$currentDate;
  
 $sql="SELECT newestOrders.email,newestOrders.username, newestOrders.max_order_time, GROUP_CONCAT(O2.product_name SEPARATOR ', ')
-      FROM (SELECT O1.email, MAX(O1.order_time) as max_order_time, O1.username
+      FROM (SELECT O1.email, O1.".cohortkey.", MAX(O1.order_time) as max_order_time, O1.username
             FROM Orders as O1   
             WHERE O1.order_time < ?
-            GROUP By O1.email) as newestOrders, Orders O2
+            GROUP By O1.".cohortkey.") as newestOrders, Orders O2
       WHERE newestOrders.max_order_time > ? 
       AND newestOrders.max_order_time < ?
-	AND O2.email = newestOrders.email
-	GROUP BY newestOrders.email
+	AND O2.".cohortkey." = newestOrders.".cohortkey."
+	GROUP BY newestOrders.".cohortkey."
       ;
 ";
 		

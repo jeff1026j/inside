@@ -3,6 +3,7 @@
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
+require_once (__ROOT__ . '/config/deconfig.php');
 
 $numberOfReturn = isset($_GET['numberOfReturn'])?json_decode($_GET['numberOfReturn']):["2","3","4","5","9999"];
 // $get_values = array();
@@ -27,13 +28,13 @@ for ($i = 0; $i < count($numberOfReturn); $i++) {
 }
 
 $sql='SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, GROUP_CONCAT(O2.product_name SEPARATOR ", ")
-FROM (	SELECT O1.email, COUNT(DISTINCT O1.order_id) as returnCustomer, MAX(O1.order_time) as max_order_time
+FROM (	SELECT O1.email,O1.'.cohortkey.',  COUNT(DISTINCT O1.order_id) as returnCustomer, MAX(O1.order_time) as max_order_time
 		FROM Orders as O1 
-		GROUP By O1.email HAVING('.$sql_number .') 
+		GROUP By O1.'.cohortkey.' HAVING('.$sql_number .') 
 		order by max_order_time
 		) uniO, Orders O2
-WHERE uniO.email = O2.email AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"
-GROUP BY uniO.email;';
+WHERE uniO.'.cohortkey.' = O2.'.cohortkey.' AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"
+GROUP BY uniO.'.cohortkey.';';
 
 $stmt = $mysqli->prepare($sql); 
 //$stmt->bind_param('d',$numberOfReturn);
