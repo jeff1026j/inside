@@ -31,6 +31,8 @@
                 return "訂單時間格式錯誤";
             case "04":
                 return "無 email";
+            case "05": 
+                return "無 phone";
             default:
                 return "無 error code";
         }
@@ -38,11 +40,13 @@
 
     function timehandler($str){
         $result = '';
+
+
         if (strlen($str)<12) {
             $time = strptime($str,'%m/%d %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';        
-        }else if(strrpos($str, "/") < 4){
+        }else if(stripos($str, "/") < 4){
             $time = strptime($str,'%m/%d/%Y %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
@@ -50,8 +54,6 @@
             $time = strptime($str,'%Y/%m/%d %H:%M');    
             @$year = $time[tm_mon]==11?2014:2015;
             @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
-
-
         }
         
         return $result;
@@ -90,6 +92,10 @@
                 # code...
                 $fileValid = false;
                 $errorCode = "04";
+            }elseif (strcasecmp($data[20],'')==0) {
+                # code...
+                $fileValid = false;
+                $errorCode = "05";
             }
             if(!$fileValid)
                 break;
@@ -126,7 +132,8 @@
 
             $stmt->execute(); 
             $stmt->close();
-            
+            // echo $data[1]."<br>";
+            // echo $order_time."<br>";
 
         }
         fclose($handle);
