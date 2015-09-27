@@ -57,13 +57,13 @@
       $endTimeSqlO1 = $endTime?'and O1.order_time <\''.$endTime.'\'':'';
       
       //get all return oders and users
-      $sql = 'SELECT returnCustomer, COUNT(returnCustomer) as numberReturn
+      $sql = 'SELECT numberReturn, COUNT(numberReturn) as returnCustomer
               FROM (
-                    SELECT O1.'.cohortkey.', COUNT(DISTINCT O1.order_id) as returnCustomer                    
+                    SELECT O1.'.cohortkey.', COUNT(DISTINCT O1.order_id) as numberReturn                    
                     FROM Orders as O1  WHERE O1.email <> "morning@ouregion.com" AND O1.email <> "jpj0121@hotmail.com" AND O1.email <> "jake.tzeng@gmail.com" AND O1.email <> "iqwaynewang@gmail.com" '.$endTimeSqlO1.'
-                    GROUP By O1.'.cohortkey.' HAVING returnCustomer > 1 
+                    GROUP By O1.'.cohortkey.' HAVING numberReturn > 1 
                     ) as O2
-              GROUP BY returnCustomer
+              GROUP BY numberReturn
        ;';
 
 
@@ -331,16 +331,16 @@
   //Medium Number of return orders
   $medReturnOrder = 0;
   foreach ($numberReturns as $value) { 
-      $lastNumberofReturn += $value['numberReturn'];
-      $overNumberofReturn = $value['numberReturn'] + $returnCustomer - $lastNumberofReturn;
+      $lastNumberofReturn += $value['returnCustomer'];
+      $overNumberofReturn = $value['returnCustomer'] + $returnCustomer - $lastNumberofReturn;
       
       if ($lastNumberofReturn*100/$returnCustomer > 50 && $medReturnOrder==0) {
-          $medReturnOrder = $value['returnCustomer'];
+          $medReturnOrder = $value['numberReturn'];
       }
     ?>
     <li class="dataSegment">
       <div class="listtitle">購買次數</div>
-      <div class="listMiddle"><?=$value['returnCustomer']?>
+      <div class="listMiddle"><?=$value['numberReturn']?>
         <div class="upNumberIC">(以上)</div>
       </div>
       <div class="listnumber"><?=round($overNumberofReturn*100/$totalCustomer,2)?>%</div>

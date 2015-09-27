@@ -74,6 +74,7 @@ body { padding-top: 70px; }
   margin-left: 42px;
 	
 }
+.top-buffer { margin-top:20px; }
 
 .main{
   margin-bottom: 300px;

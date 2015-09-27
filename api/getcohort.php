@@ -12,30 +12,54 @@ require_once (__ROOT__ . '/config/deconfig.php');
   function getHighRetentionRatiobyMonth($firstMonth, $endTime){
     
     //假設 3 月進來 user，9 月 來看，回購週期 45 天，6 個月至少要回購 6/1.5 = 4 次以上的比例
+    //first month : 201503
 
     global $mysqli;
-    $returnPeriod = 1.5;//(個月)
-    //parse first month 
+    $returnPeriod = 45;//(天)
+
+    //parse date object
+    $firstDateMonth = DateTime::createFromFormat('Y-m-d', substr($firstMonth, 0, 4).'-'.substr($firstMonth, 4,strlen($firstMonth)-4).'-'.'15');
+    $lastDateMonth = DateTime::createFromFormat('Y-m-d H:i:s', $endTime);
+    $diffDays = $lastDateMonth->diff($firstDateMonth)->days;
+    
+    $returnOrderBenchMark = round($diffDays/$returnPeriod); //四捨五入
+
 
     $timeSql = $endTime?' AND Orders.order_time < "'. $endTime .'"':null;
 
     
-
-    $sql = 'SELECT returnCustomer, COUNT(returnCustomer) as numberReturn
+    //get return times and users from first month
+    $sql = 'SELECT numberReturn, COUNT(numberReturn) as returnCustomer
             FROM
-             (SELECT Orders.email, Orders.'.cohortkey.', COUNT(DISTINCT Orders.order_id) as returnCustomer                    
+             (SELECT Orders.email, Orders.'.cohortkey.', COUNT(DISTINCT Orders.order_id) as numberReturn                    
               FROM  Orders 
                    JOIN (SELECT '.cohortkey.', EXTRACT(YEAR_MONTH from Min(order_time)) AS cohortDate 
                          FROM  Orders 
                          GROUP  BY '.cohortkey.') AS cohorts 
                    ON Orders.'.cohortkey.' = cohorts.'.cohortkey.'
               WHERE cohortDate = "'.$firstMonth.'"' . $timeSql . ' AND Orders.email <> "morning@ouregion.com" AND Orders.email <> "morning@ouregion.com" AND Orders.email <> "jpj0121@hotmail.com" AND Orders.email <> "jake.tzeng@gmail.com" AND Orders.email <> "iqwaynewang@gmail.com"  
-              GROUP BY Orders.'.cohortkey.' HAVING returnCustomer > 1 ) as O2
-            GROUP BY returnCustomer;';
+              GROUP BY Orders.'.cohortkey.') as O2
+            GROUP BY numberReturn;';
 
+    $stmt = $mysqli->query($sql); 
+    $data = array();
+    $totalCustomer = 0;
+    $customerOverBenchMark = 0;
     
+    while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
+      $totalCustomer += $row['returnCustomer'];
+      if ($row['numberReturn'] >= $returnOrderBenchMark && $row['numberReturn'] > 1) {
+        $customerOverBenchMark += $row['returnCustomer'];
+      }
+    }
+    // echo "firstDateMonth: ".$firstMonth.'<br>';
+    // echo "totalCustomer: ".$totalCustomer.'<br>';
+    // echo "returnOrderBenchMark: ".$returnOrderBenchMark.'<br>';
+    // echo "customerOverBenchMark: ".$customerOverBenchMark.'<br><br><br>';
 
-    // return 
+    $stmt->close();
+
+    return round($customerOverBenchMark*100/$totalCustomer, 2);
 
   }
 
@@ -106,21 +130,23 @@ require_once (__ROOT__ . '/config/deconfig.php');
       @$cohortaAveragePerMonth[$returnDate]['sum'] += $row['orderNumbers']*round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2);
       @$cohortaAveragePerMonth[$returnDate]['impact'] += $row['orderNumbers'];
     }
-       
 
   }
   
-  //compute the average
+  //compute the cohort average
   foreach ($cohortaAveragePerMonth as $key => $value) {
     //print_r($value);
     $cohortaAverage[$key] = round($value['sum']/$value['impact'],2).'%';
 
   }  
 
+  //construct cohort table, add first & last line
   foreach ($cohort as $key => $value) {
     //print_r($value);
-    $cohortResult[] = array('Month' =>$key) + $value /*+ array('NumberOfReturn' =>$key)*/;
+    $highReturnBenchmark = $key=='Month'?'固定回購比':getHighRetentionRatiobyMonth($key,$endTime)."%";
 
+    $cohortResult[] = array('Month' =>$key) + $value + array('highReturnBenchmark' =>$highReturnBenchmark);
+    
   }
   //add the last line to show average
   $cohortResult[] = array('Month' => 'AVG') + $cohortaAverage;

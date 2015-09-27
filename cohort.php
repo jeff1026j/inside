@@ -59,7 +59,7 @@
     </thead>
 </table>
 
-
+<div class="alert top-buffer alert-warning" role="alert">ps.固定回購比: 超過平均回購頻次的消費者比例 <br/>ex: 假設消費者是 3 月進來，量測時間為 9 月，回購週期 1.5 個月，則為回購次數超過 4 次以上的消費者比例</div>
 <script>
     $( document ).ready(function() {
         var data = <?=$json?>;
