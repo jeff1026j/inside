@@ -31,7 +31,7 @@
 <br/>
 <h3>選擇觀測日期：</h3>
 <div class="input-group date">
-  <input type="text" class="form-control" value="<?=$endTime?>"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+  <input type="text" class="form-control" id="endTime" value="<?=$endTime?>"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
 </div>
 <br/>
 <button class="btn btn-info" id="export-button">Export</button>
@@ -60,6 +60,21 @@
 </table>
 
 <div class="alert top-buffer alert-warning" role="alert">ps.固定回購比: 超過平均回購頻次的消費者比例 <br/>ex: 假設消費者是 3 月進來，量測時間為 9 月，回購週期 1.5 個月，則為回購次數超過 4 次以上的消費者比例</div>
+<h3>首次購買 - 商品排行</h2>        
+<h4>首購日期：</h4>
+<div class="input-group date top-buffer">
+  <input type="text" id="cohortDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+</div>
+<table data-toggle="table" data-url="/api/productByNewUser.php" id="productTable" data-sort-name="productSum" data-sort-order="desc">
+    <thead>
+        <tr>
+            <th data-field="product_name">商品名稱</th>
+            <th data-field="productSum">數量</th>
+        </tr>
+    </thead>
+</table>
+
+
 <script>
     $( document ).ready(function() {
         var data = <?=$json?>;
@@ -80,7 +95,7 @@
             window.location.href = 'data:text/csv;charset=UTF-8,'
                                  + encodeURIComponent(csv);
         });
-        $('.input-group.date').datepicker({
+        $('#endTime').datepicker({
             format: "yyyy-mm-dd",
             orientation: "top auto",
             todayHighlight: true,
@@ -90,6 +105,24 @@
             window.location = "/cohort.php?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
 
         });
+
+        $('#cohortDate').datepicker({
+            format: "yyyymm",
+            minViewMode: 1,
+            language: "zh-TW",
+            autoclose: true
+            
+        }).on("changeDate", function(e){
+            var getCohortListURL="/api/productByNewUser.php";
+            // window.location = "/?endtime="+ e.date.getFullYear() + "-" + (e.date.getMonth() + 1)  + "-" + e.date.getDate();
+            var cohortDate = $('#cohortDate').val();
+            var url = getCohortListURL+'?firstMonth='+cohortDate ;
+            //console.log(url);
+            $('#productTable').bootstrapTable('refresh', {
+                url: url
+            });
+
+        });      
 
         // $table.bootstrapTable('remove', {field: 'Month', values: ["201412", "201501"]})
         // $table.bootstrapTable('hideRow', {index:0});

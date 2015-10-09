@@ -239,8 +239,8 @@
     // }   
 
 
-    $newOrderGoal = 6527;
-    $oldOrderGoal = 3473;
+    $newOrderGoal = 7000;
+    $oldOrderGoal = 5500;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);
