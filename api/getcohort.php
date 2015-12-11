@@ -123,7 +123,7 @@ require_once (__ROOT__ . '/config/deconfig.php');
     //prepare the first cohort array  
     $cohort['Month'][$row['firstdate']] = $row['firstdate'];
 
-    $cohort[$row['firstdate']][$returnDate] = !strcmp($row['firstdate'],$returnDate)?$row['orderNumbers']:$row['orderNumbers'].'  ('.round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],2).'%)';
+    $cohort[$row['firstdate']][$returnDate] = !strcmp($row['firstdate'],$returnDate)?$row['orderNumbers']:$row['orderNumbers'].' ('.round($row['orderNumbers']*100/$cohort[$row['firstdate']][$row['firstdate']],1).'%)';
 
     //later to compute average return rate 
     if (strcmp($row['firstdate'],$returnDate)) {

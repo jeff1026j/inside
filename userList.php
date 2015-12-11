@@ -47,7 +47,7 @@
 
         <br/><br/>
 
-        <table data-toggle="table" data-url="/api/getuserList.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+        <table data-toggle="table" data-url="/api/getuserList.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-query-params="queryParams" data-pagination="true">
             <thead>
                 <tr>
                     <th data-field="email">Email</th>
@@ -128,6 +128,16 @@
 </div>
 
 <script>
+    function queryParams() {
+        return {
+            type: 'email',
+            sort: 'max_order_time',
+            direction: 'desc',
+            per_page: 100,
+            page: 1,
+            exportDataType: "all"
+        }
+    }
     $( document ).ready(function() {
         var defaultUrl="/api/getuserList.php";
         $("input:checkbox[name=inlineCheckboxOptions]").click(function() {
@@ -142,6 +152,7 @@
                url: defaultUrl+'?numberOfReturn='+encodeURIComponent(JSON.stringify(values))
             });
         });
+        
         // This must be a hyperlink
 //         $(".export-button").on('click', function (event) {
 //         // CSV

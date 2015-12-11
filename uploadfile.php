@@ -1,13 +1,29 @@
 <?php
     require_once 'header.php';
 ?>
-            			<h2>Upload csv file - UTF8 only</h2>
-			            <form  action="uploadprocess.php" method="post" enctype="multipart/form-data" onsubmit="return Validate(this);">
-            			    <div class="form-group">
-			            	<input type="file" id="csvfile" name="csvfile">
-				
+            			<h3>Upload csv file - UTF8 only</h3>
+                        <form id="fileUpload" class="form-horizontal" action="uploadprocess.php" method="post" enctype="multipart/form-data" onsubmit="return Validate(this);">
+            			    <div class="top-buffer form-group">
+                                <label class="text-left col-sm-2 control-label">檔案資料</label>
+                                <div class="col-sm-10">
+                                  <select class="form-control">
+                                      <option>訂單</option>
+                                      <option>商品</option>
+                                      <option>賣場商品AM</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div class="top-buffer form-group">
+                                <label class="text-left col-sm-2 control-label ">選擇檔案</label>
+                                <div class="col-sm-10">
+			                 	   <input type="file" id="csvfile" name="csvfile">
+                                </div>       
             			    </div>
-			                <button type="submit" class="btn btn-default">Submit</button>
+                            <div class="top-buffer form-group">
+                                <div class="col-sm-10">
+			                     <button type="submit" class="btn btn-default">Submit</button>
+                                </div>
+                            </div>
         			    </form>
 
 
@@ -29,7 +45,7 @@ function Validate(oForm) {
                                    break;
                                 }
                             }
-                                                                                                                                                           if (!blnValid) {
+                            if (!blnValid) {
                                 alert("Sorry, only " + _validFileExtensions.join(", "));
                                 return false;
                             }
@@ -38,5 +54,22 @@ function Validate(oForm) {
               }
               return true;
 }
+$( "select" )
+  .change(function () {
+    str=""
+    $( "select option:selected" ).each(function() {
+        var str = $( this ).text();
+        var url = "";
+        if (str=="訂單") {
+            url = "uploadprocess.php";
+        }else if(str=="商品"){
+            url = "uploadProductProcess.php";
+        }else if(str=="賣場商品AM"){
+            url = "parseUitoxAMfile.php";
+        } 
+        
+        $("#fileUpload").attr("action", url);
+    });
+});
 </script>
 <?php require_once 'footer.php';?>

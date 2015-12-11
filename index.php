@@ -43,7 +43,7 @@
       $returnCustomers = array();
       while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
         $data[] = $row;
-        $returnCustomers[] = $row['email'];
+        $returnCustomers[] = $row[cohortkey];
       }
 
       $stmt->close();
@@ -88,17 +88,18 @@
       $sql='SELECT Count(*) FROM (
               SELECT Orders.'.cohortkey.', cohortDate , Orders.order_time
               FROM  Orders 
-                    JOIN (SELECT '.cohortkey.', EXTRACT(MONTH from (Min(order_time))) AS cohortDate 
+                    JOIN (SELECT '.cohortkey.', EXTRACT(YEAR_MONTH from (Min(order_time))) AS cohortDate 
                           FROM  Orders 
                           WHERE email <> "morning@ouregion.com" AND email <> "jpj0121@hotmail.com" AND email <> "jake.tzeng@gmail.com" AND email <> "iqwaynewang@gmail.com"   
                           GROUP  BY '.cohortkey.') AS cohorts 
                     ON Orders.'.cohortkey.' = cohorts.'.cohortkey.'
-              WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(MONTH from (order_time)) '.$endTimeSqlO1.'
+              WHERE EXTRACT(YEAR_MONTH from (order_time)) = ? AND cohortDate  <> EXTRACT(YEAR_MONTH from (order_time)) '.$endTimeSqlO1.'
             GROUP BY Orders.order_id ORDER BY Orders.'.cohortkey.') as tablea;';
 
       $stmt = $mysqli->prepare($sql); 
       $stmt->bind_param('s',$year_month);
 
+      
       $stmt->execute();
       $stmt->bind_result($mReturnOrders);
       $stmt->fetch();
@@ -107,12 +108,15 @@
       return $mReturnOrders;
     }
 
+    
+
     function getDistincOrders($endTime){
       global $mysqli;
 
       //count all orders and customers
       $endTimeSqlO1 = $endTime?'where O1.order_time <\''.$endTime.'\'':'';
-      $sql = 'SELECT COUNT(Distinct email), COUNT(Distinct order_id) FROM Orders O1 '.$endTimeSqlO1.';';
+      $sql = 'SELECT COUNT(Distinct phone), COUNT(Distinct order_id) FROM Orders O1 '.$endTimeSqlO1.';';
+      // echo $sql;
       $stmt = $mysqli->prepare($sql);
       $stmt->execute();
       $stmt->bind_result($totalCustomer,$totalOrders);
@@ -125,7 +129,7 @@
     function returnInterval($orders){
       //compute return order interval
       $interval = 0;
-      $email = '';
+      $distinctKey = '';
       $counter = 0;
       $mainCounter = 0;
       $temp_interval = 0;
@@ -138,7 +142,7 @@
 
       foreach ($data as $value) {
 
-          if ($email == $value['email']) {
+          if ($distinctKey == $value[cohortkey]) {
               //same user, different order
 
               //compute time difference to pre one
@@ -162,7 +166,7 @@
 
           }else{
             //different user
-              $email = $value['email'];
+              $distinctKey = $value[cohortkey];
               $order_time = $value['order_time'];
               
               if ($counter > 0) {
@@ -219,6 +223,7 @@
     //endTimeThisMonth : 6/1
     //list($dataTM, $returnCustomersTM) = getAllReturnOrders($endTimeThisMonth);
     list($totalCustomerTM, $totalOrdersTM) = getDistincOrders($endTimeThisMonth);
+    // echo $endTime;
     
     //endTimeLastMonth : 5/1
     //list($dataLM, $returnCustomersLM) = getAllReturnOrders($endTimeLastMonth);
@@ -239,8 +244,8 @@
     // }   
 
 
-    $newOrderGoal = 7000;
-    $oldOrderGoal = 5500;
+    $newOrderGoal = 9000;
+    $oldOrderGoal = 6000;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);

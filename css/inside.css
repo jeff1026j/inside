@@ -74,8 +74,25 @@ body { padding-top: 70px; }
   margin-left: 42px;
 	
 }
-.top-buffer { margin-top:20px; }
+.top-buffer { margin-top:40px; }
 
 .main{
   margin-bottom: 300px;
+}
+
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+#cohortTable{
+	font-size: 12.2px;
+}
+
+.bootstrap-table .table#cohortTable, .bootstrap-table .table#cohortTable>tbody>tr>td, .bootstrap-table .table#cohortTable>tbody>tr>th, .bootstrap-table .table#cohortTable>tfoot>tr>td, .bootstrap-table .table#cohortTable>tfoot>tr>th, .bootstrap-table .table#cohortTable>thead>tr>td{
+	padding: 6.9px !important;
+}
+
+.text-left{
+	text-align:left !important;
 }

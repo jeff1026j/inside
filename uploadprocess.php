@@ -1,26 +1,11 @@
 <?php
     require_once 'header.php';
-    /* @param string $csvFile Path to the CSV file
-    * @return string Delimiter
-    */
-    function detectDelimiter($csvFile)
-    {
-        $delimiters = array(
-            ';' => 0,
-            ',' => 0,
-            "\t" => 0,
-            "|" => 0
-        );
-
-        $handle = fopen($csvFile, "r");
-        $firstLine = fgets($handle);
-        fclose($handle); 
-        foreach ($delimiters as $delimiter => &$count) {
-            $count = count(str_getcsv($firstLine, $delimiter));
-        }
-
-        return array_search(max($delimiters), $delimiters);
+    
+    function phonenumber($phone){
+        $phone = substr($phone, 0, 1)=="9"?"0".$phone:$phone;
+        return $phone;
     }
+
     function errcodeInterpret($erCode){
         switch ($erCode) {
             case "01":
@@ -36,27 +21,6 @@
             default:
                 return "無 error code";
         }
-    }
-
-    function timehandler($str){
-        $result = '';
-
-
-        if (strlen($str)<12) {
-            $time = strptime($str,'%m/%d %H:%M');    
-            @$year = $time[tm_mon]==11?2014:2015;
-            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';        
-        }else if(stripos($str, "/") < 4){
-            $time = strptime($str,'%m/%d/%Y %H:%M');    
-            @$year = $time[tm_mon]==11?2014:2015;
-            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
-        }else{
-            $time = strptime($str,'%Y/%m/%d %H:%M');    
-            @$year = $time[tm_mon]==11?2014:2015;
-            @$result = $year.'-'.($time[tm_mon]+1).'-'.$time[tm_mday].' '.$time[tm_hour].':'.$time[tm_min].':00';
-        }
-        
-        return $result;
     }
     //file
     $rawfilename = isset($_FILES['csvfile']['tmp_name'])?$_FILES['csvfile']['tmp_name']:null;
@@ -120,7 +84,7 @@
             $product_id          = $data[13];
             $username            = $data[16];
             $email               = $data[21];
-            $phone               = $data[20];
+            $phone               = phonenumber($data[20]);
   //          echo "row number: # $row \n <br/><br/>";
   //          echo "order_id: $order_id, status: $status, order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time, product_name: $product_name, product_rank: $product_rank, product_quantity: $product_quantity, product_price: $product_price, product_cost: $product_cost, product_id: $product_id, username: $username <br/><br/>";
 //            echo   "order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time <br/><br/>";

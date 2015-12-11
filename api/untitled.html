@@ -1,0 +1,35 @@
+<?php
+
+define('__ROOT__', dirname(dirname(__FILE__)));
+require_once (__ROOT__ . '/config/config_db.php');
+require_once (__ROOT__ . '/config/conn_db.php');
+require_once (__ROOT__ . '/config/deconfig.php');
+
+$json = array(); 
+$sql=" SELECT * FROM product;";
+   
+$stmt = $mysqli->prepare($sql); 
+
+$stmt->execute();
+/* Store the result (to get properties) */
+$stmt->store_result();
+
+/* Get the number of rows */
+$num_of_rows = $stmt->num_rows;
+
+/* Get the result */
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $json[] = $row;
+}
+
+/* free results */
+$stmt->free_result();
+echo json_encode($json);
+
+$stmt->close();
+$mysqli->close();
+
+?>
+

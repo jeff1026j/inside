@@ -1,6 +1,7 @@
 <?php
 require_once 'config/config_db.php';
 require_once 'config/conn_db.php';
+require_once 'api/functions.php';
 
 //get the last update order set
 //get the post data
@@ -25,24 +26,24 @@ $stmt->close();
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/inside.css">
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/inside.css">
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.css">
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table-all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.js"></script>
     <!-- Latest compiled and minified Locales -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/locale/bootstrap-table-zh-TW.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
-    <link rel="stylesheet" href="css/datepicker3.css">
-    <script type="text/javascript" src="js/table2CSV.js"></script>
-    <script type="text/javascript" src="js/validator.js"></script>
-    <script type="text/javascript" src="js/bootstrap-table-export.js"></script>
-    <script type="text/javascript" src="js/tableExport.js"></script>
-    <script type="text/javascript" src="js/jquery.base64.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/locale/bootstrap-table-zh-TW.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" href="/css/datepicker3.css">
+    <script type="text/javascript" src="/js/table2CSV.js"></script>
+    <script type="text/javascript" src="/js/validator.js"></script>
+    <script type="text/javascript" src="/js/bootstrap-table-export.js"></script>
+    <script type="text/javascript" src="/js/tableExport.js"></script>
+    <script type="text/javascript" src="/js/jquery.base64.js"></script>
 
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>

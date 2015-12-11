@@ -38,9 +38,10 @@
 <br/>
 <!--</form>-->
 <br/>
-<table id="cohortTable" >
+<table id="cohortTable" data-show-columns="true" data-click-to-select="true">
     <thead>
         <tr>
+            <th data-field="state" data-checkbox="true"></th>
             <?php   
                 foreach ($data[0] as $key => $value) {
                     // if ($value == "201412" || $value == "201501" || $value == "201502") {
@@ -123,6 +124,7 @@
             });
 
         });      
+        //$table.bootstrapTable('hideColumn', 'state');
 
         // $table.bootstrapTable('remove', {field: 'Month', values: ["201412", "201501"]})
         // $table.bootstrapTable('hideRow', {index:0});

@@ -7,12 +7,15 @@ require_once (__ROOT__ . '/config/deconfig.php');
 
 $product_id = isset($_GET['product_id']) ?$_GET['product_id']:null;
 $seller = isset($_GET['seller']) ?$_GET['seller']:null;
+$uitoxAmid = isset($_GET['uitoxAmid']) ?$_GET['uitoxAmid']:null;
+// $price = isset($_GET['price']) ?$_GET['price']:null;
+// $cost = isset($_GET['cost']) ?$_GET['cost']:null;
 
-if (!$seller || !$product_id) exit("product_id & seller is null");
+if (!$seller || !$product_id  || !$uitoxAmid /* || !$cost */) exit("product_id & seller is null");
 
-$sql = "INSERT IGNORE INTO productSeller (product_id,seller) VALUES (?,?)";
+$sql = "UPDATE product set seller = ?, uitoxAmid = ? where product_id=?";
 $stmt = $mysqli->prepare($sql); 
-$stmt->bind_param('ss',$product_id,$seller);
+$stmt->bind_param('sss',$seller,$uitoxAmid,$product_id);
 
 $stmt->execute(); 
 $stmt->close();
