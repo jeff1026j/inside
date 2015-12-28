@@ -39,7 +39,9 @@ $products = getAllProduct();
 foreach ($products as $value) {
 	//get products avg_sale
 	$ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://'.$_SERVER['HTTP_HOST'].'/api/getPredictSales.php?productid='.$value);
+	$host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:"inside.morningshop.tw";
+	
+    curl_setopt($ch, CURLOPT_URL, 'http://'.$host.'/api/getPredictSales.php?productid='.$value);
     // $options = array(
     //     CURLOPT_RETURNTRANSFER => true, 
     //     CURLOPT_POST           => true,   // return web page
@@ -53,6 +55,11 @@ foreach ($products as $value) {
     curl_close($ch);
    	
    	$result = json_decode($result);
+
+	if (!is_object($result)) {
+        continue;
+    }
+
 	$avg_sale = $result->avg_sale;   	
 
 	//and save to db

@@ -104,9 +104,9 @@ function get91productList(){ //500
 	// 		);
 
 	$result = json_decode(call91api($url,$input));
-	// echo "123: <br>";
-	// print_r($result);
-	// echo '<br><br><br><br><br>';
+	 // echo "123: <br>";
+	 // print_r($result);
+	 // echo '<br><br><br><br><br>';
 	
 	if ($result->Status != "Success") {
 		$result = null;	
@@ -121,25 +121,32 @@ function updateAppProductSaleQty($product_id_app,$saleqty,$skuid,$product_id_uit
 	$appStock = getAppStock($product_id_app);
 
 	// echo "appStock: $appStock <br>";
-	if (!$appStock) {
+	if (is_null($appStock)) {
 		return null;
 	}
 	// echo "string2";
 	//	$changevalue = (int)$saleqty - (int)$appStock;
+	
+	//$saleqty = 0;  //mark it if u want salesqty all 0
 
-	$changevalue = 0 - (int)$appStock;	
+	$changevalue = $saleqty - (int)$appStock;	
 
 	$changevalue = (string) ($changevalue > 0 ? "+".$changevalue : $changevalue);
 
+	// echo "product_id_uitox1: ".$product_id_uitox."<br>";
+	// echo "product_id_app1: ".$product_id_app."<br>";
+	// echo "saleqty1: ".$saleqty."<br>";
+	// echo "appStock1: ".$appStock."<br>";
+	// echo "changevalue1: ".$changevalue."<br>";
+	
+	if ($changevalue == "0") {
+		return null;
+	}
 	// echo "product_id_uitox: ".$product_id_uitox."<br>";
 	// echo "product_id_app: ".$product_id_app."<br>";
 	// echo "saleqty: ".$saleqty."<br>";
 	// echo "appStock: ".$appStock."<br>";
 	// echo "changevalue: ".$changevalue."<br>";
-	
-	if ($changevalue == "0") {
-		return null;
-	}
 
 	$url = "https://api.91mai.com/scm/v1/Salepage/UpdateStock";
 
@@ -165,7 +172,7 @@ function updateAppProductSaleQty($product_id_app,$saleqty,$skuid,$product_id_uit
 	// print_r($result);
 
 	if ($result->Status != "Success") {
-		$result = null;	
+		return null;
 	}
 
 	return $result->Data;
@@ -250,7 +257,7 @@ function deliveryShipment($shopId,$TMCode,$TSCodeList,$forwarderDef,$ShippingOrd
 		return $result;
 	}
 	// echo "string2";
-	return $result->Data[0];
+	// return $result->Data[0];
 
 }
 // deliveryShipment(1993,"TM151205120077",array(),8,"");

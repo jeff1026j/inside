@@ -146,11 +146,8 @@ while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
 
 // get all the orders -> import to uitox
 $import_orders = addNewOrderUITOX($orders);
-// print_r($import_orders);
 
 foreach ($import_orders as $value) {
-	// print_r($value);
-	// echo "<br>";
 	updateOrderStatus('ship',$value);
  	deliveryShipment(1993,$value->vendor_order_no,array(),8,$value->uitox_order_no);
 	

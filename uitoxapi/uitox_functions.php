@@ -244,14 +244,18 @@ function getUITOXproductSaleqty($product_id){
     //
     $stmt->fetch();
     $uitoxAmid = !$uitoxAmid ? null : $uitoxAmid;
-    
+    // echo "product_id: ".$product_id."<br>";
     if (!$pid) {
+        // echo "need uitoxAmid: ".$product_id."<br>";
         //parse the uitox data and insert to db
         $item = getUITOXproductInfo($product_id);
         $name = $item->item_name;
         $cost = $item->cost;
         $price = $item->price;
 
+        if (!$name) {
+            return null;
+        }
 
         $sql2 = "INSERT IGNORE INTO product (product_id,product_name,price,cost,createtime) VALUES (?,?,?,?,?)";
         $stmt2 = $mysqli->prepare($sql2); 

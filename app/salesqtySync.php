@@ -16,6 +16,9 @@ require_once (__ROOT__ . '/app/app_functions.php');
 //print_r(call91api($url,$input));
 $products = get91productList();
 
+// echo "products: ".count($products);
+
+// print_r($products);
 foreach ($products as $value) {
 
 	
@@ -23,14 +26,14 @@ foreach ($products as $value) {
 	$product_id_uitox = $value->OuterId;
 	$skuid =  $value->SkuId;
 	$saleqty = getUITOXproductSaleqty($product_id_uitox);
-	
+	// echo "saleqty: ".$saleqty."<br>";
 	if ($saleqty !== null) {
 
-		$saleqty = max(($saleqty - 100),0);
+		$saleqty = max(($saleqty - 80),0);
 		updateAppProductSaleQty($product_id_app,$saleqty,$skuid,$product_id_uitox);
 
 	}
 
 }
-echo "newnew";
+// echo "newnew";
 ?>

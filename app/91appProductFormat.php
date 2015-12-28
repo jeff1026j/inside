@@ -199,7 +199,7 @@ function outputcsvfile($data,$re_filepath){
 
 
 
-$data = getAllProduct('麥片');
+$data = getAllProduct('保鮮盒');
 $output = array();
 $fileName = '/tmp/91appProduct';
 
@@ -218,7 +218,7 @@ foreach ($data as $col) {
 
 		//saveimgfromWeb("/tmp/".$product_id.'.jpg',$info['previewUrl']);
 
-		$output[] = array('美食、名特產 ＞ 茶、咖啡、沖泡 ＞ 纖食/穀類',/*'商店類別' => */'全部麥片',
+		$output[] = array('生活、居家、寵物 > 餐廚 > 餐廚用品 > 微波盒、保鮮盒、罐',/*'商店類別' => */'麥片小物',
 						/*'商品名稱' => */$product_name,
 						/*'數量'    => */$qty,
 						/*'建議售價' => */$info['sug_price'],

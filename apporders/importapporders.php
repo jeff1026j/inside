@@ -1,5 +1,6 @@
 <?php
-require_once '../app/app_functions.php';
+define('__ROOT8__', dirname(dirname(__FILE__)));
+require_once (__ROOT8__ . '/app/app_functions.php');
 
 function appOrderSaveToDB($order_time,
 	$product_name,
@@ -23,7 +24,8 @@ function appOrderSaveToDB($order_time,
 	$city,
 	$zipcode,
 	$district,
-	$order_device){
+	$order_device,
+	$appMemberid){
 
 	global $mysqli;
 
@@ -40,9 +42,9 @@ function appOrderSaveToDB($order_time,
 	$stmt2->close();
 
 	
-	$sql = "INSERT INTO Orders (order_id,status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	$sql = "INSERT INTO Orders (status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device, appmemberid) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     $stmt = $mysqli->prepare($sql); 
-    $stmt->bind_param('ssssssddddssssssddsssssssss',$a='',$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device);
+    $stmt->bind_param('sssssddddssssssddssssssssss',$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid);
 
     $stmt->execute(); 
 
@@ -104,7 +106,7 @@ foreach ($orders as $v) {
 	$product_cost = null;
 	$product_id = $v->OuterId;
 	$username = $v->OrderReceiverName;
-	$email = $v->email;
+	$email = @$v->email;
 	$email = !$email?'temp@no.email':$email;
 	$phone = $v->OrderReceiverMobile;
 	$vendor_order_no = $v->TMCode;
@@ -127,7 +129,8 @@ foreach ($orders as $v) {
 	$city = $v->OrderReceiverCity;
 	$zipcode = $v->OrderReceiverZipCode;
 	$district = $v->OrderReceiverDistrict;
-	
-	appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device);
+	$appMemberid = $v->MemberCode;
+
+	appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid);
 }
 ?>
