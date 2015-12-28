@@ -2,6 +2,29 @@
 define('__ROOT8__', dirname(dirname(__FILE__)));
 require_once (__ROOT8__ . '/app/app_functions.php');
 
+function checkOrdersExisted($vendor_order_no,$vendor_order_no_extra){
+	global $mysqli;
+	
+	$result = false;
+
+	$sql2 = 'SELECT count(id) as total, order_id, morningstage FROM Orders where vendor_order_no = ? and vendor_order_no_extra = ?';
+
+	$stmt2 = $mysqli->prepare($sql2); 
+	$stmt2->bind_param('ss',$vendor_order_no , $vendor_order_no_extra);
+
+	$stmt2->execute();
+	$stmt2->bind_result($total,$order_id,$morningstage);
+	$stmt2->fetch();
+	$stmt2->close();
+
+	if ($total > 0) {
+		$result = true;
+	}
+
+	return array('result' => $result,'order_id'=>$order_id,'morningstage'=>$morningstage);
+}
+
+
 function appOrderSaveToDB($order_time,
 	$product_name,
 	$product_rank,
@@ -28,6 +51,23 @@ function appOrderSaveToDB($order_time,
 	$appMemberid){
 
 	global $mysqli;
+
+	//if order is ship but not process in 91 app
+	$duplicate_data = checkOrdersExisted($vendor_order_no,$vendor_order_no_extra);
+
+	// print_r($duplicate_data);
+
+	if ($duplicate_data['result']){
+		
+		if($duplicate_data['order_id'] && strcmp($duplicate_data['morningstage'],'ship')==0){
+				// echo $duplicate_data['order_id']."<br>";
+				// echo $duplicate_data['morningstage']."<br>";
+			 	deliveryShipment(1993,$vendor_order_no,array(),8,$duplicate_data['order_id']);
+		}
+
+		return null;
+
+	}
 
 	//get products
 	$sql2 = 'SELECT p.cost,p.product_name From product p where p.product_id = ?';

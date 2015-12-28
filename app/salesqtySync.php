@@ -29,7 +29,7 @@ foreach ($products as $value) {
 	// echo "saleqty: ".$saleqty."<br>";
 	if ($saleqty !== null) {
 
-		$saleqty = max(($saleqty - 80),0);
+		$saleqty = max(($saleqty - 40),0);
 		updateAppProductSaleQty($product_id_app,$saleqty,$skuid,$product_id_uitox);
 
 	}
