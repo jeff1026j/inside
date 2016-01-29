@@ -6,6 +6,23 @@ require_once (__ROOT__ . '/config/conn_db.php');
 
 $product_id = isset($_GET['productid'])?$_GET['productid']:null;
 
+function getMonthSalesWithoutday($product_id){
+	global $mysqli;
+
+	$sql2 = "SELECT sum(product_quantity) FROM Orders where product_id=? and order_time > DATE_SUB(curdate(), INTERVAL 1 month);";
+
+	$stmt2 = $mysqli->prepare($sql2); 
+	$stmt2->bind_param('s',$product_id);
+
+	$stmt2->execute();
+	$stmt2->bind_result($avg_sale);
+	
+	$stmt2->fetch();
+
+
+
+	return $avg_sale;
+}
 
 
 function getProductSales($product_id){
@@ -36,14 +53,24 @@ function getProductSales($product_id){
 
 		$stmt->execute();
 		$stmt->bind_result($avg_sale);
-		//
 		
 		$stmt->fetch();
+		$stmt->close();
 		$avg_sale = !$avg_sale?0:$avg_sale;
 		
-		$stmt->close();
-		$mysqli->close();
+		//modify the sales when sales are down
+		if ($avg_sale < 90) {
+			//get the 30days average for the product
+			$avg_sale = getMonthSalesWithoutday($product_id);
+
+		}
+
+
+		// $stmt->close();
+		// $mysqli->close();
 		
+
+
 		return floor($avg_sale);
 	}	
 }
