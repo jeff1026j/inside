@@ -19,12 +19,20 @@
       return $date && DateTime::getLastErrors()["warning_count"] == 0 && DateTime::getLastErrors()["error_count"] == 0;
     }
 
-    function getAllReturnOrders($endTime){
+    function getAllReturnOrders($startime,$endTime,$numberOfReturn){
       global $mysqli;
       //compute the endTime
       $endTimeSqlO1 = $endTime?'where O1.order_time <\''.$endTime.'\'':'';
       $endTimeSqlO3 = $endTime?'And O3.order_time <\''.$endTime.'\'':'';
 
+      $endTimeSqlO1 = $startime? $endTimeSqlO1.' and O1.order_time > \''.$startime.'\'':$endTimeSqlO1;
+      $endTimeSqlO3 = $startime? $endTimeSqlO3.' and O3.order_time > \''.$startime.'\'':$endTimeSqlO3;
+
+      //if null fetch all returns, or specific to one return group
+      $returnQuery = $numberOfReturn && $numberOfReturn != 1? "= $numberOfReturn": ">1";
+
+      // echo "endTimeSqlO1:".$endTimeSqlO1."<br>";
+      // echo "endTimeSqlO3:".$endTimeSqlO3."<br>";
       // echo $endTimeSqlO1.'<br/>';
       // echo $endTimeSqlO3;
 
@@ -32,7 +40,7 @@
       $sql = 'SELECT O3.email, O3.'.cohortkey.' , O3.order_id, UNIX_TIMESTAMP(O3.order_time) as order_time, SUM(product_price) as order_price            
               FROM (SELECT O1.email,O1.'.cohortkey.', COUNT(DISTINCT O1.order_id) as returnCustomer                    
                     FROM Orders as O1  '.$endTimeSqlO1.'
-                    GROUP By O1.'.cohortkey.' HAVING returnCustomer > 1 ) as O2, Orders O3             
+                    GROUP By O1.'.cohortkey.' HAVING returnCustomer  '.$returnQuery.' ) as O2, Orders O3             
               WHERE O3.'.cohortkey.' = O2.'.cohortkey.' AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"    '.$endTimeSqlO3.'
               GROUP BY O3.order_id 
               ORDER BY O3.'.cohortkey.', O3.order_time;';
@@ -214,7 +222,7 @@
 
     //get current customer
     //endTime : 6/10
-    list($data, $returnCustomers) = getAllReturnOrders($endTime);
+    list($data, $returnCustomers) = getAllReturnOrders(null,$endTime,null);
     list($totalCustomer, $totalOrders) = getDistincOrders($endTime);
     
     // echo '$totalCustomer: ' .$totalCustomer.'<br>';
@@ -244,8 +252,8 @@
     // }   
 
 
-    $newOrderGoal = 9000;
-    $oldOrderGoal = 6000;
+    $newOrderGoal = 4200;
+    $oldOrderGoal = 5000;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);

@@ -5,7 +5,7 @@ require_once 'api/functions.php';
 
 //get the last update order set
 //get the post data
-$sql = "SELECT MAX(order_time) from Orders";
+$sql = "SELECT MAX(order_time) from Orders where order_from is null";
 $stmt = $mysqli->prepare($sql); 
 $stmt->execute(); 
 
@@ -15,7 +15,7 @@ $stmt->fetch();
 //echo $postid . $userid . $content . $title . $photo . $url;
 
 $stmt->close();
-
+ 
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +61,7 @@ $stmt->close();
                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                             <ul class="nav navbar-nav">
                                 <li><a href="/uploadfile.php">匯入</a></li>
+                                <li><a href="/productSales.php">銷售業績</a></li>
                                 <li><a href="/returnProductRanking.php">回購強商品排行榜</a></li>
                                 <li><a href="/userList.php">會員名單</a></li>
                                 <li><a href="/cohort.php">Cohort</a></li>
