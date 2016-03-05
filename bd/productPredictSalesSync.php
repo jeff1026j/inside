@@ -2,17 +2,17 @@
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
-
+  
 function getAllProduct(){
 	global $mysqli;
 	
-	$sql = 'SELECT product_id From product';
+	$sql = 'SELECT storage_id From product';
 
 	$stmt = $mysqli->query($sql); 
 	$data = array();
-	
+	 
 	while($row = $stmt->fetch_array(MYSQLI_ASSOC)){
-		$data[] = $row['product_id'];
+		$data[] = $row['storage_id'];
 	}
 
 	$stmt->close();
@@ -23,9 +23,9 @@ function getAllProduct(){
 function saveAVGsaleDB($product_id,$sale){
 	global $mysqli;
 	
-	if (!$product_id  || $sale === null /* || !$cost */) exit("product_id & sale  is null");
+	if (!$product_id  || $sale === null /* || !$cost */) exit("storage_id & sale  is null");
 
-	$sql = "UPDATE product set avg_sale = ? where product_id=?";
+	$sql = "UPDATE product set avg_sale = ? where storage_id=?";
 	$stmt = $mysqli->prepare($sql); 
 	$stmt->bind_param('ds',$sale,$product_id);
 

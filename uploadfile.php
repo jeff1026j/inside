@@ -10,6 +10,9 @@
                                       <option>訂單</option>
                                       <option>商品</option>
                                       <option>賣場商品AM</option>
+                                      <option>會員</option>
+                                      <option>倉庫商品轉移</option>
+                                      
                                   </select>
                                 </div>
                             </div>
@@ -25,7 +28,7 @@
                                 </div>
                             </div>
         			    </form>
-
+ 
 
 <script type="text/javascript">
 var _validFileExtensions = [".csv"];
@@ -66,7 +69,11 @@ $( "select" )
             url = "uploadProductProcess.php";
         }else if(str=="賣場商品AM"){
             url = "parseUitoxAMfile.php";
-        } 
+        }else if(str=="會員"){
+            url = "parseUserfile.php";
+        }else if(str=="倉庫商品轉移"){
+            url = "newWareHouseProcess.php";
+        }  
         
         $("#fileUpload").attr("action", url);
     });

@@ -3,7 +3,7 @@ define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
 require_once (__ROOT__ . '/config/deconfig.php');
-
+  
   function isValidDateTimeString($str_dt, $str_dateformat) {
         $date = DateTime::createFromFormat($str_dateformat, $str_dt);
         return $date && DateTime::getLastErrors()["warning_count"] == 0 && DateTime::getLastErrors()["error_count"] == 0;

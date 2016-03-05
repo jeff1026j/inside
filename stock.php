@@ -1,94 +1,118 @@
 <?php
     require_once 'header.php';
 ?>
-<h2>MorningShop 無敵叫貨王</h2>
+<div role="tabpanel"> 
 
-<div class = "col-md-8">
-	<form class="form-horizontal" role="form">
-		<input type="hidden" name="cash" id="cash" value="142775"><!-- 付完上月應付、但未付當月員工薪水 -->
-		<input type="hidden" name="adsSpend" id="adsSpend" value="300000">
-		<input type="hidden" name="operCost" id="operCost" value="200000">
-		<!-- <input type="hidden" name="ratioOfBorrowBuy" id="ratioOfBorrowBuy" value="0.7"> -->
-		<input type="hidden" name="goodsCostlastMonth" id="goodsCostlastMonth" value="579126">
-		<input type="hidden" name="expectCash" id="expectCash" value="150000">
-		<input type="hidden" name="updateMonth" id="updateMonth" value="4">
-	 	<div class="form-group">
-			<div class="checkbox" >
-		      <label>
-		        <input type="checkbox" id="ranking20"> 是否為前 20% 商品或有潛力？
-		      </label>
-		    </div>
-		</div>
-		<div class="form-group">
-		    	<label for="income">輸入 <?=date('m')-1?>/12~NOW 的營業額：</label>
-		    	<input type="text" class="form-control" id="income">
-		</div>
-		<div class="form-group">
-		    	<label for="currentGoods">本月叫貨金額：</label>
-		    	<input type="text" class="form-control" id="currentGoods">
-		</div>
-		<br/>
-		
-		<div class="form-group">
-			<button type="submit" class="btn btn-default">試算</button>
-		</div>
-	</form>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">貨品狀態</a></li>
+    <!-- <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">久久未買</a></li> -->
+    <!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Cohort名單</a></li> -->
+    <!--<li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
+  </ul>
 
-    <div class="alert alert-success" role="alert" id="result"></div>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="home">
+        <!--<form class="form-inline">-->
+        <div class="top-buffer"></div>
+        <!-- <div class="form-group"> 
+            <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="3" checked="checked"> 3天
+            </label>
+            <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="14"> 2 週
+            </label>
+            <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="30"> 1 個月
+            </label>
+            <!-- <button class="btn btn-warning Return export-button">Export</button>
+       </div> -->
+        <!--</form>-->
+
+        <table data-toggle="table" data-url="/api/getProductsNew.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+            <thead>
+                <tr>
+                    <th data-field="product_name">產品</th>
+                    <th data-field="storage_id">倉庫編碼</th>
+                    <th data-field="avg_sale" data-sortable="true">平均月銷量</th>
+                    <th data-field="quantity" data-sortable="true">庫存</th>
+                    <th data-field="seller" data-sortable="true">負責人員</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- <div role="tabpanel" class="tab-pane" id="profile">
+        <h2>久久未買</h2>
+        <br/> 
+        <h4>計算日期：</h4>
+        <div class="input-group date">
+          <input type="text" id="currentDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+        </div>
+        <h4>未購買時間</h4>
+        <form class="form-horizontal" data-toggle="validator" role="form" id="noReturnform">
+            <div class="form-group"> 
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label for="inputKey" class="col-md-1 control-label">Min</label>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="minKey" placeholder="0">
+                        </div>
+                        <label for="inputValue" class="col-md-1 control-label">Max</label>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control" id="maxKey" placeholder="0">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-default btn-info">更新</button>    
+                        </div>
+                        <!-- <div class="col-md-2">
+                            <button class="btn btn-warning noReturn export-button">Export</button>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+
+        <table data-toggle="table" data-url="/api/getUsernoReturn.php" data-search="true" id="userTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+            <thead>
+                <tr>
+                    <th data-field="email">Email</th>
+                    <th data-field="user_name">姓名</th>
+                    <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
+                    <th data-field="product" class="no_export">過往購買商品</th>
+                </tr>
+            </thead>
+        </table>
+
+    </div>
+    <div role="tabpanel" class="tab-pane" id="messages">
+        <h2>Cohort名單</h2>
+        <br/> 
+        <h4>首購日期：</h4>
+        <div class="input-group date">
+          <input type="text" id="cohortDate" class="form-control" value=""><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+        </div>
+        <table data-toggle="table" data-url="/api/getCohortUserList.php" data-search="true" id="cohortTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+            <thead>
+                <tr>
+                    <th data-field="email">Email</th>
+                    <th data-field="user_name">姓名</th>
+                    <th data-field="max_order_time" data-sortable="true">最新訂購時間</th>
+                    <th data-field="product" class="no_export">過往購買商品</th>
+                </tr>
+            </thead>
+        </table>
+    </div> -->
+    <!--<div role="tabpanel" class="tab-pane" id="settings">...</div> -->
+  </div>
+
 </div>
-<div class = "col-md-4">
-	<div class="alert alert-danger" role="alert">寄倉就直接叫 1.3x 月銷量的貨</div>
-</div>
-<script type="text/javascript">
 
-function dataNeedsUpdate(){
-	var resultString = '';
-	var updateMonth = parseInt($('#updateMonth').val());
-	if (updateMonth != <?=date('m')?>) {
-		resultString = '請先完成月初結帳再使用';
-	};
-	return resultString;
-}
-
-
-
-$( document ).ready(function() {
-	var result = '' ;
-	$( "form" ).submit(function( event ) {
-		var cash = parseInt($('#cash').val());
-		var adsSpend = parseInt($('#adsSpend').val());
-		var operCost = parseInt($('#operCost').val());
-		var goodsCostlastMonth = parseInt($('#goodsCostlastMonth').val());
-		var ranking20 = $("#ranking20").prop('checked');
-		var income = parseFloat($('#income').val());
-		var currentGoods = parseInt($('#currentGoods').val());
-		var ratioOfBorrowBuy = parseFloat($('#ratioOfBorrowBuy').val());
-		var expectCash = parseFloat($('#expectCash').val());
-		
-		//compute the stock value we can buy
-		var safeStockValue = cash -adsSpend*2 - operCost*2 - goodsCostlastMonth + income;
-		var remainQuta = safeStockValue - currentGoods-expectCash;
-		
-		//console.log('cash: '+cash);console.log('adsSpend: '+adsSpend);console.log('operCost: '+operCost);console.log('goodsCostlastMonth: '+goodsCostlastMonth);console.log('ranking20: '+ranking20);console.log('income: '+income);console.log('currentGoods: '+currentGoods);console.log('ratioOfBorrowBuy: '+ratioOfBorrowBuy);console.log('remainQuta: '+remainQuta);console.log('safeStockValue: '+safeStockValue );
-		
-		if (remainQuta < 0) { //we don't have any money
-			result = ranking20?'<a href="https://www.facebook.com/messages/wu.tsungjung" target="blank">點擊和 Jeffrey 討論</a>':'先不要叫貨';
-		}else{
-			result = ranking20?'以 1.3 倍月銷量叫（扣掉爆量的幾天）， 最多叫'+remainQuta:'以兩個禮拜的量來叫，最多叫 '+remainQuta;
-		}
-
-		var updateNeeded = dataNeedsUpdate();
-		result = updateNeeded !='' ? updateNeeded : result;	
-
-		event.preventDefault();
-		$('#result').html(result);
-	});
-
-	
-});
-
-
+<script>
+    $( document ).ready(function() {
+        var defaultUrl="/api/getProducts.php";
+    });     
 </script>
-
 
 <?php require_once 'footer.php';?>

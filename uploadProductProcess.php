@@ -12,7 +12,7 @@
             default:
                 return "無 error code";
         }
-    }
+    } 
 
     
     //file
@@ -22,8 +22,8 @@
     $fileValid = true;
     $errorCode = "00";
 
-    //detect delimeter first 
-    $del = detectDelimiter($rawfilename);
+    //detect delimeter first   
+    $del = detectDelimiter($rawfilename);  
 
     // echo "del:".$del."end";
 
@@ -34,12 +34,12 @@
                 //check if the column is all the same
                 if ( !strstr($data[0],"商品名稱") || 
                      !strstr($data[6],'分類')|| 
-                     !strstr($data[21],'商品ID')
+                     !strstr($data[22],'商品ID')
                      ){ 
                     $fileValid = false;
                     $errorCode = "01";    
                 }
-            }elseif (strcasecmp($data[21],'')==0) {
+            }elseif (strcasecmp($data[22],'')==0) {
                 # code...
                 $fileValid = false;
                 $errorCode = "02";
@@ -54,7 +54,7 @@
     if (($handle = fopen($rawfilename, "r")) !== FALSE && $fileValid) {
         while (($data = fgetcsv($handle, 1000000, $del)) !== FALSE) {
             $num = count($data);
-            $product_id             = $data[21]; 
+            $product_id             = $data[22]; 
             $product_name           = $data[0]; 
             $color                  = $data[1]; 
             //$seller                 = ??? 
@@ -74,11 +74,11 @@
             $order_patern           = $data[15]; 
             $ean                    = $data[16]; 
             $isbn                   = $data[17]; 
-            $vendor                 = $data[18]; 
-            $vendor_custom_numeber   = $data[19]; //廠商自有料號
-            $vendor_custom          = $data[20]; 
-            $first_stock_time       = timehandler($data[22]);
-            $createtime             = timehandler($data[24]);
+            $vendor                 = $data[19]; 
+            $vendor_custom_numeber   = $data[20]; //廠商自有料號
+            $vendor_custom          = $data[21]; 
+            $first_stock_time       = timehandler($data[23]);
+            $createtime             = timehandler($data[25]);
 
   //          echo "row number: # $row \n <br/><br/>";
   //          echo "order_id: $order_id, status: $status, order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time, product_name: $product_name, product_rank: $product_rank, product_quantity: $product_quantity, product_price: $product_price, product_cost: $product_cost, product_id: $product_id, username: $username <br/><br/>";

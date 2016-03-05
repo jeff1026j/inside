@@ -3,7 +3,7 @@ define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
 require_once (__ROOT__ . '/config/deconfig.php');
-
+  
 $firstMonth = (isset($_GET['firstMonth']) && $_GET['firstMonth']!='')?$_GET['firstMonth']:date('Ym');
 
 // echo $cohortDate;

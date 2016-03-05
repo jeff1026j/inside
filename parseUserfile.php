@@ -10,18 +10,18 @@
             default:
                 return "無 error code";
         }
-    }
+    } 
     
     //file
     $rawfilename = isset($_FILES['csvfile']['tmp_name'])?$_FILES['csvfile']['tmp_name']:null;
     //check csv file first
 
-    $fileValid = true;
+    $fileValid = true; 
     $errorCode = "00";
 
     //detect delimeter first 
     $del = detectDelimiter($rawfilename);
-
+   
     // echo "del:".$del."end";
 
     if (($handle = fopen($rawfilename, "r")) !== FALSE) {
@@ -29,7 +29,7 @@
             
         //check if the column is all the same
         if ( !strstr($data[0],"會員編號") || 
-             !strstr($data[2],'會員姓名')|| 
+             !strstr($data[2],'會員姓名')||   
              !strstr($data[3],'手機號碼')|| 
              !strstr($data[4],'註冊日期')|| 
              !strstr($data[5],'最後消費日期')|| 
@@ -78,7 +78,7 @@
         $mysqli->close();
     }
     unlink($rawfilename);
-
+ 
     if (!$fileValid) {
         echo '<h3> 上傳錯誤， 錯誤代碼：'.$errorCode.'<br/>錯誤解釋： '.errcodeInterpret($errorCode).'</h3>';
     }

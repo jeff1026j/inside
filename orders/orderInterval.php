@@ -8,14 +8,14 @@ require_once (__ROOT__ . '/config/deconfig.php');
 
 function returnInterval($orders){
       //compute return order interval
-      $interval = 0;
+      $interval = 0;  
       $distinctKey = '';
       $counter = 0;
       $mainCounter = 0;
       $temp_interval = 0;
       $temp_order_price = 0;
       $order_price = 0;
-      $arraycount = 1;
+      $arraycount = 1; 
       $modeDay = 3; // day period to group return Interval
       $modeCount = array();
       $data = $orders;

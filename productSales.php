@@ -16,7 +16,7 @@
     <div role="tabpanel" class="tab-pane active" id="home">
         <!--<form class="form-inline">-->
         <div class="top-buffer"></div>
-        <div class="form-group">
+        <div class="form-group"> 
             <label class="radio-inline">
             <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="3" checked="checked"> 3天
             </label>
@@ -30,12 +30,13 @@
        </div>
         <!--</form>-->
 
-        <table data-toggle="table" data-url="/api/getProductSales.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-query-params="queryParams" data-pagination="true">
+        <table data-toggle="table" data-url="/api/getProductSales.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-query-params="queryParams" data-pagination="true" data-page-size="50">
             <thead>
                 <tr>
                     <th data-field="product_name">產品</th>
                     <th data-field="amount" data-sortable="true">銷售量</th>
                     <th data-field="revenue" data-sortable="true">銷售金額</th>
+                    <th data-field="avg_sale" data-sortable="true">平均月銷量</th>
                     <th data-field="quantity" data-sortable="true">庫存</th>
                 </tr>
             </thead>
@@ -112,6 +113,7 @@
     function queryParams() {
         return {
             per_page: 100,
+            pageSize: 50,
             page: 1,
             exportDataType: "all"
         }

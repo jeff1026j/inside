@@ -6,7 +6,7 @@ require_once (__ROOT__ . '/config/conn_db.php');
 require_once (__ROOT__ . '/config/deconfig.php');
 
 $cohortDate = (isset($_GET['cohortDate']) && $_GET['cohortDate']!='')?$_GET['cohortDate']:date('Ym');
-
+  
 // echo $cohortDate;
 
 // $currentDate = '2015-03';

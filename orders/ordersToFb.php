@@ -9,7 +9,7 @@ require (__ROOT__ . '/src/PHPMailer/PHPMailerAutoload.php');
 function outputcsvfile($data,$re_filepath){
 	
 	$fp = fopen($re_filepath, 'w');
-	
+	   
 	foreach ($data as $fields) {
 	    fputcsv($fp, $fields);
 	}

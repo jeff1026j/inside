@@ -3,7 +3,7 @@ define('__ROOT3__', dirname(dirname(__FILE__)));
 require_once (__ROOT3__ . '/config/config_db.php');
 require_once (__ROOT3__ . '/config/conn_db.php');
 require_once (__ROOT3__ . '/config/deconfig.php');
-
+  
 function curlPost($url,$postData){
 	
 	$ch = curl_init();
@@ -81,16 +81,13 @@ function getAppStock($id){
 
 }
 
-function get91productList(){ //500
+function getSKUCount(){ //500
 
-	$url = "https://api.91mai.com/scm/v1/Salepage/GetSKUList";
+	$url = "https://api.91mai.com/scm/v1/SalePage/GetSkuCount";
 	$input = json_encode(
 				array(
 					"createdDateTimeStart" => "2013-10-01T10:03",
-					"createdDateTimeEnd" => "2016-10-01T10:03",
-					"position" => 0,
-					"count" => 500,
-					"isClosed" => false
+					"createdDateTimeEnd" => "2017-10-01T10:03"
 				)
 			);	
 	// $input2 = json_encode(
@@ -106,6 +103,41 @@ function get91productList(){ //500
 	$result = json_decode(call91api($url,$input));
 	 // echo "123: <br>";
 	 // print_r($result);
+	 // echo '<br><br><br><br><br>';
+	
+	if ($result->Status != "Success") {
+		$result = null;	
+	}
+
+	return $result->Data;
+
+}
+
+
+function get91productList($position,$count){ //500
+
+	$url = "https://api.91mai.com/scm/v1/Salepage/GetSKUList";
+	$input = json_encode(
+				array(
+					"createdDateTimeStart" => "2013-10-01T10:03",
+					"createdDateTimeEnd" => "2017-10-01T10:03",
+					"position" => $position,
+					"count" => $count
+				)
+			);	
+	// $input2 = json_encode(
+	// 			array(
+	// 				"createdDateTimeStart" => "2013-10-01T10:03",
+	// 				"createdDateTimeEnd" => "2016-10-01T10:03",
+	// 				"position" => 499,
+	// 				"count" => 500,
+	// 				"isClosed" => ture
+	// 				)
+	// 		);
+
+	$result = json_decode(call91api($url,$input));
+	 // echo "123: <br>";
+	  // print_r($result);
 	 // echo '<br><br><br><br><br>';
 	
 	if ($result->Status != "Success") {
@@ -211,6 +243,35 @@ function getAppOrders($shopId,$orderDeliverType,$orderDateType,$startDate,$endDa
 
 	return $orders;
 }
+
+function getAppOrdersCount($shopId,$orderDeliverType,$orderDateType,$startDate,$endDate,$orderStatus,$position,$count,$ShippingOrderStatus){
+	$orders = array();
+	$url = "https://api.91mai.com/scm/v1/Order/GetOrderList";
+	$input = json_encode(
+				array(
+					"shopId" => $shopId,
+					"orderDeliverType" => $orderDeliverType,
+					"orderDateType" => $orderDateType,
+					"startDate" => $startDate,
+					"endDate" => $endDate,
+					"orderStatus" => $orderStatus,
+					"position" => $position,
+					"count" => $count,
+					"ShippingOrderStatus" => $ShippingOrderStatus
+				)
+			);	
+
+	$result = json_decode(call91api($url,$input));
+
+
+	if ($result->Status != "Success") {
+		$result = null;	
+		return $result;
+	}
+
+	return $result->Data->TotalCount;
+}
+
 
 function getAppOrderSpec($shopId,$TMCode,$TSCode){
 

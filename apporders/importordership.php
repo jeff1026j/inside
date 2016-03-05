@@ -5,7 +5,7 @@ require_once (__ROOT1__ . '/config/conn_db.php');
 require_once (__ROOT1__ . '/config/deconfig.php');
 require_once (__ROOT1__ . '/uitoxapi/uitox_functions.php');
 require_once (__ROOT1__ . '/app/app_functions.php');
-
+  
 function payType($type){
 	switch ($type) {
 		case "CreditCardOnce":

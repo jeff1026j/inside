@@ -13,7 +13,7 @@
      * @param string $str_dateformat
      * @param string $str_timezone (If timezone is invalid, php will throw an exception)
      * @return bool
-     */
+     */  
     function isValidDateTimeString($str_dt, $str_dateformat) {
       $date = DateTime::createFromFormat($str_dateformat, $str_dt);
       return $date && DateTime::getLastErrors()["warning_count"] == 0 && DateTime::getLastErrors()["error_count"] == 0;
@@ -171,7 +171,7 @@
                   $temp_interval = 0;
                   $mainCounter++;
               }
-
+  
           }else{
             //different user
               $distinctKey = $value[cohortkey];
@@ -252,8 +252,8 @@
     // }   
 
 
-    $newOrderGoal = 4200;
-    $oldOrderGoal = 5000;
+    $newOrderGoal = 6500;
+    $oldOrderGoal = 6500;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);

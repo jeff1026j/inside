@@ -17,7 +17,7 @@
             case "04":
                 return "無 email";
             case "05": 
-                return "無 phone";
+                return "無 phone"; 
             default:
                 return "無 error code";
         }

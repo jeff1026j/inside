@@ -4,14 +4,14 @@ header('Content-Type: application/xml');
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
-
+  
 $product_id = isset($_GET['productid'])?$_GET['productid']:null;
 $amid = isset($_GET['amid'])?$_GET['amid']:null;
 $cost = isset($_GET['cost'])?$_GET['cost']:null;
 $seller = isset($_GET['seller'])?$_GET['seller']:null;
 $name = isset($_GET['name'])?$_GET['name']:null;
 
-$avg_sale = 0;
+$avg_sale = 0; 
 $reproduct_id = '';
 //check if there's product_id
 if ($product_id) {
@@ -49,10 +49,10 @@ if ((!$reproduct_id || $avg_sale === null) && $product_id && $name && $amid) {
    	$result = json_decode($result);
 	$avg_sale = $result->avg_sale;   	
 	
-	$sql = "INSERT IGNORE INTO product (product_id,product_name,uitoxAmid,cost,createtime,seller,avg_sale) VALUES (?,?,?,?,?,?,?)";
+	$sql = "INSERT IGNORE INTO product (product_id,product_name,uitoxAmid,cost,createtime,seller,avg_sale) VALUES (?,?,?,?,?,?,?) on duplicate key update avg_sale=?";
 
 	$stmt = $mysqli->prepare($sql); 
-	$stmt->bind_param('sssdssd',$product_id,$name,$amid,$cost,$date = date("Y-m-d H:i:s"),$seller,$avg_sale);
+	$stmt->bind_param('sssdssdd',$product_id,$name,$amid,$cost,$date = date("Y-m-d H:i:s"),$seller,$avg_sale,$avg_sale);
 
 	$stmt->execute();
 	$stmt->close();	

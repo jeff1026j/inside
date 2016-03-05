@@ -12,7 +12,7 @@ function parseSpreadSheet($fileName){
             $am_id              = $data[13]; 
             $cost               = $data[6]; 
             $price              = $data[5]; 
-            $product_name       = $data[2];
+            $product_name       = $data[2];  
   //          echo "row number: # $row \n <br/><br/>";
   //          echo "order_id: $order_id, status: $status, order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time, product_name: $product_name, product_rank: $product_rank, product_quantity: $product_quantity, product_price: $product_price, product_cost: $product_cost, product_id: $product_id, username: $username <br/><br/>";
 //            echo   "order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time <br/><br/>";
@@ -22,10 +22,10 @@ function parseSpreadSheet($fileName){
             $stmt = $mysqli->prepare($sql); 
             $stmt->bind_param('ssss',$price,$cost, $product_name ,$am_id);
 
-            $stmt->execute(); 
+            $stmt->execute();   
             $stmt->close();
             // echo $data[1]."<br>";
-            // echo $order_time."<br>";
+            // echo $order_time."<br>";  
 
         }
         fclose($handle);

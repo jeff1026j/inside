@@ -2,18 +2,24 @@
 /**
 generate 91 app product import format
 **/
-
+  
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/header.php');
 require_once (__ROOT__ . '/api/functions.php');
 require_once (__ROOT__ . '/config/deconfig.php');
+require_once (__ROOT__ . '/config/aws-config-key.php'); 
+require_once (__ROOT__ . '/config/aws.phar');
+
+//upload the photo first
+use Aws\S3\S3Client;
+use Aws\S3\Enum\CannedAcl;
 
 
 function getAllProduct($cat){
 	global $mysqli;
 	
 	$cat = $cat ? 'where cat = "'.$cat.'"' : '';
-	$sql = 'SELECT * From product ' . $cat;
+	$sql = 'SELECT * From product where  product_id = "201508AG190004492" or product_id = "201508AG200003930" or product_id = "201501AG210000258" or product_id = "201501AG210000239" or product_id = "201501AG210000242" or product_id = "201501AG210000248" or product_id = "201501AG210000254" or product_id = "201501AG210000266" or product_id = "201501AG210000268" or product_id = "201512AG150008779" or product_id = "201512AG100012396" or product_id = "201512AG150008894" or product_id = "201512AG100012442" or product_id = "201511AG060000622" or product_id = "201511AG060001513" or product_id = "201507AG290003769" or product_id = "201507AG290003702" or product_id = "201507AG290003654" or product_id = "201507AG290003505" or product_id = "201411AG210000042" or product_id = "201411AG210000068" or product_id = "201412AG240000966" or product_id = "201412AG240000965" or product_id = "201512AG290015527" or product_id = "201512AG290015656" or product_id = "201412AG190000080" or product_id = "201412AG190000209" or product_id = "201412AG190000109" or product_id = "201511AG170006463" or product_id = "201412AG190000207" or product_id = "201511AG170006372" or product_id = "201412AG190000219" or product_id = "201412AG190000085" or product_id = "201412AG190000176" or product_id = "201412AG190000084" or product_id = "201412AG190000215" or product_id = "201412AG120000035" or product_id = "201412AG120000039" or product_id = "201412AG120000031" or product_id = "201412AG120000040" or product_id = "201506AG150001545" or product_id = "201506AG150001540" or product_id = "201506AG150001537" or product_id = "201506AG150001535" or product_id = "201506AG150001525" or product_id = "201506AG150001523" or product_id = "201506AG150001510" or product_id = "201506AG220001740" or product_id = "201506AG220001877" or product_id = "201506AG220001797" or product_id = "201506AG220001757" or product_id = "201509AG250006571" or product_id = "201512AG280007968" or product_id = "201512AG280007916" or product_id = "201512AG280007914" or product_id = "201509AG170005886" or product_id = "201509AG170004994" or product_id = "201509AG170005890" or product_id = "201601AG060002409" or product_id = "201601AG060002419" or product_id = "201601AG060002540" or product_id = "201601AG060002536" or product_id = "201601AG060002357" or product_id = "201601AG060002363" or product_id = "201601AG060002344" or product_id = "201601AG060002337" or product_id = "201501AG140000237" or product_id = "201501AG140000234" or product_id = "201501AG200000509" or product_id = "201501AG140000224" or product_id = "201501AG200000493" or product_id = "201501AG200000511" or product_id = "201412AG250000892" or product_id = "201412AG250000893" or product_id = "201412AG250000890" or product_id = "201504AG230001827" or product_id = "201505AG150001350" or product_id = "201507AG220000582" or product_id = "201504AG130000514" or product_id = "201509AG230004331" or product_id = "201509AG230003993" or product_id = "201509AG230004312" or product_id = "201509AG230003953" or product_id = "201509AG230003296" or product_id = "201509AG230003311" or product_id = "201509AG230004310" or product_id = "201509AG230003750" or product_id = "201509AG230003680";';
 
 	$stmt = $mysqli->query($sql); 
 	$data = array();
@@ -51,7 +57,7 @@ function getUrlContent($url){
 }
 		  
 function itemDetailHTML($data){
-	$item = $data->desc;
+	$item = $data;
 	$desc_content = '<div class="item-detail" style="outline: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;margin: 0;padding: 0;border: 0;font-size: 100%;vertical-align: baseline;background: transparent;zoom: 1;">
             <div class="container" style="outline: 0;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;box-sizing: border-box;margin: 30px
                auto;padding: 0
@@ -81,19 +87,160 @@ function changeBRlineBreak($text){
 	return $text;
 }
 
+function uitoxtoimgurl($imgurl){
+	$client_id = "57249ab69c7794d";//"3b9c7d61b701011";
+	$image = file_get_contents($imgurl);
+	$timeout = 50;
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
+	curl_setopt($ch, CURLOPT_POST, TRUE);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Client-ID ' . $client_id));
+	curl_setopt($ch, CURLOPT_POSTFIELDS, array('image' => base64_encode($image)));
+
+	$reply = curl_exec($ch);
+	curl_close($ch);
+
+	$reply = json_decode($reply);
+
+	if ($reply->data->link == "") { //second chance
+		$image = file_get_contents($imgurl);
+
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image.json');
+		curl_setopt($ch, CURLOPT_POST, TRUE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Client-ID ' . $client_id));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, array('image' => base64_encode($image)));
+
+		$reply = curl_exec($ch);
+		curl_close($ch);
+
+		$reply = json_decode($reply);
+	}
+	return $reply->data->link;
+
+}
+
+
+function savetos3($url){
+
+	$client = S3Client::factory(array(
+	    'key'    => AWS_KEY,
+	    'secret' => AWS_SECRET
+	));
+
+	$uniid = uniqid();	
+	$tempImgLocal = "/tmp/$uniid.jpg";
+	copy($url, $tempImgLocal);
+	echo "string";
+	// Upload an object by streaming the contents of a file
+	// $pathToFile should be absolute path to a file on disk
+
+	$result = $client->putObject(array(
+	    'Bucket'     => AWS_BUCKET,
+	    'Key'        => $uniid.'.jpg',
+	    'SourceFile' => $tempImgLocal,
+	    'ACL'    => CannedAcl::PUBLIC_READ_WRITE,
+	    'CacheControl' => 'max-age=94608000',
+        'ContentType' => 'image/jpeg'
+	));
+	echo "string2";
+	unlink($tempImgLocal);
+	$photopath = $result['ObjectURL'];
+	echo "string3";
+	return $photopath;
+
+}
+
+function parseitemdetail($data){
+	$doc = new DOMDocument();
+	
+	try{
+		@$doc->loadHtml($data);
+	
+	}catch(Exception $e) {
+
+		return null;
+	}
+
+	$xpath = new DOMXPath($doc);
+
+	$div = $xpath->query('//div[@class="item-detail"]');
+	$div = $div->item(0);
+
+	$xpath2 = new DOMXPath($doc);
+	$div2 = $xpath->query('//div[@class="desc"]');
+
+	$output = array();
+
+	$imgnodes = $div->getElementsByTagName('img');
+
+	$i = 0;
+	
+	foreach ($imgnodes as $img) {
+		
+		$imgData = new stdClass;
+    	$imgData->type=2;
+		$imgData->pic_pos = $i;   
+    	
+    	$imgData->pic = savetos3($img->attributes->getNamedItem("data-original")->value);
+
+    	$output[] = $imgData;
+    	$i++;
+	}
+
+	//add 5 selection in it
+	$imgData = new stdClass;
+	$imgData->type=2;
+	
+	$imgData->pic = "http://i.imgur.com/wGn9bmc.jpg";
+	$output[] = $imgData;
+	
+
+	foreach ($div2 as $desc) {
+		$Data = new stdClass;
+    	$Data->type=1;
+    	$Data->desc = $desc->nodeValue;
+
+    	$output[] = $Data;			
+	}
+
+	// print_r($output);
+	// echo $p->nodeValue;
+
+	return $output;
+}
+
 function parseitemSpec($item_spec){
 	$doc = new DomDocument;
-	$doc->loadHtml($item_spec);
+	$spec = null;
+	$nutrition = null;
 
+	try{
+		$doc->loadHtml($item_spec);
+	
+	}catch(Exception $e) {
+
+		return null;
+	}
+	
+	
 	// //get class item detail
 	$finder = new DomXPath($doc);
 	$classname="spec";
 	$nodes = $finder->query("//*[contains(@class, '$classname')]");
-
-	$spec = getInnerHtmlNode($nodes->item(0)->getElementsByTagName('li')->item(0));	
-	$nutrition = getInnerHtmlNode($nodes->item(2)->getElementsByTagName('li')->item(0));	
-
-	return array('spec' => utf8_decode(changeBRlineBreak($spec)), 'nutrition' => utf8_decode(changeBRlineBreak($nutrition)));
+	
+	if ($nodes->length > 3) {
+		$spec = getInnerHtmlNode($nodes->item(0)->getElementsByTagName('li')->item(1));	
+		$nutrition = getInnerHtmlNode($nodes->item(2)->getElementsByTagName('li')->item(1));	
+	}
+	
+	//return array('spec' => utf8_decode(changeBRlineBreak($spec)), 'nutrition' => utf8_decode(changeBRlineBreak($nutrition)));
+	return array('spec' => strip_tags(changeBRlineBreak($spec)), 'nutrition' => strip_tags(changeBRlineBreak($nutrition)));
 }
 
 /*
@@ -110,9 +257,10 @@ function parseitemSpec($item_spec){
 function parseUITOXweb($uitoxAMid){
 	
 	if (!$uitoxAMid || $uitoxAMid == 'NULL') {
+		// echo "hahaha";
 		return array('status' => 'fail');
 	}
-
+	// echo "bobobo";
 	$info = $item_detail = $item_spec = array();
 	$doc = new DomDocument;
 
@@ -126,23 +274,28 @@ function parseUITOXweb($uitoxAMid){
 	$doc->validateOnParse = true;
 	$content = getUrlContent($url);
 
+	// print_r($content);
 	try{
-
+		
 		$doc->loadHtml($content);
+		
 		$item_detail = json_decode(getUrlContent($item_detail_url));
+		
 		$item_spec = getUrlContent($item_spec_url);
 		
 
+
 	} catch(Exception $e) {
 		$doc = null;
+
 		$info['status'] = "fail";
 	}
 
 	if ($doc) {
 		$info['status'] = "success";
 		//$info['previewUrl'] = $doc->getElementById('item_photo')->getAttribute('src');
-		$info['item_detail'] = itemDetailHTML($item_detail);
-		$info['item_spec'] = parseitemSpec($item_spec);
+		$info['item_detail'] = itemDetailHTML(parseitemdetail($content));//itemDetailHTML($item_detail);
+		$info['item_spec'] = parseitemSpec($content);
 		
 		if (preg_match('/var product_data=(.*?);/m', $content, $matches)) {
 
@@ -161,6 +314,9 @@ function parseUITOXweb($uitoxAMid){
 		$info['sug_price'] = $sug_price;
 	}
 
+	if (!$info['item_spec']['spec'] && !$info['item_spec']['nutrition']) {
+		$info['status'] = "fail";
+	}
 
 	return $info;
 }
@@ -198,27 +354,38 @@ function outputcsvfile($data,$re_filepath){
 }
 
 
-
-$data = getAllProduct('保鮮盒');
+$data = getAllProduct('沖泡即食品');
+echo "data 數量： ".count($data)."<br>";
+print_r($data);
 $output = array();
 $fileName = '/tmp/91appProduct';
+
+// print_r($data);
+
+// print_r(parseUITOXweb('201411AM210000002'));
 
 foreach ($data as $col) {
 	$uitoxAMid = $col['uitoxAmid'];
 
 	$product_id = $col['product_id'];
+	$storage_id = $col['storage_id'];
 	$product_name = $col['product_name'];
 	$qty = 0;
 	$price = $col['price'];
 	$cost = $col['cost'];
-	
+	// echo "<br>";echo "<br>";echo "<br>";
+	// echo "start: id: ".$product_id." name: ".$product_name;
+
 	$info = parseUITOXweb($uitoxAMid);
+
+	// echo "<br>";echo "<br>";echo "<br>";
+	// print_r($info);	
 
 	if ($info['status'] == 'success') {
 
 		//saveimgfromWeb("/tmp/".$product_id.'.jpg',$info['previewUrl']);
 
-		$output[] = array('生活、居家、寵物 > 餐廚 > 餐廚用品 > 微波盒、保鮮盒、罐',/*'商店類別' => */'麥片小物',
+		$output[] = array('美食、名特產 > 零食、蜜餞 > 果乾/堅果',/*'商店類別' => */'餅乾',
 						/*'商品名稱' => */$product_name,
 						/*'數量'    => */$qty,
 						/*'建議售價' => */$info['sug_price'],
@@ -237,7 +404,7 @@ foreach ($data as $col) {
 						/*'商品選項'    => */'無',
 						/*'商品選項一'  => */'',
 						/*'商品選項二'  => */'',
-						/*'商品料號'    => */$product_id,
+						/*'商品料號'    => */$storage_id,
 						/*'商品選項圖檔' => */'',
 						/*'商品規格'    => */'',
 						/*'商品圖檔一'   => */"$product_id.jpg",
@@ -316,3 +483,5 @@ outputcsvfile($output, $newfilename);
 
 ?>
 <?php require_once( __ROOT__ . '/footer.php');?>
+
+

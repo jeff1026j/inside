@@ -7,8 +7,8 @@
 
     $endTime = isset($_GET['endtime'])?$_GET['endtime']:null;
     
-    $ch = curl_init();
-
+    $ch = curl_init();  
+  
     $url = $endTime?'http://'.$_SERVER['HTTP_HOST'].'/api/getcohort.php?endtime='.$endTime:'http://'.$_SERVER['HTTP_HOST'].'/api/getcohort.php';
 
     curl_setopt($ch, CURLOPT_URL, $url);

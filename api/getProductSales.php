@@ -1,5 +1,5 @@
 <?php
-
+  
 define('__ROOT__', dirname(dirname(__FILE__)));
 require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
@@ -9,17 +9,17 @@ $day = isset($_GET['day'])?$_GET['day']:3;
 // $get_values = array();
 // echo 'test:' . $_GET['numberOfReturn'];
 
-$sql='select Orders.product_name, Orders.product_id, sum(product_quantity) as amount, sum(product_price) as revenue,quantity from Orders,product where Orders.product_id=product.product_id and order_time > DATE_SUB(curdate(), INTERVAL ? DAY) group by Orders.product_id order by amount desc;';
+$sql='select Orders.product_name, Orders.storage_id, sum(product_quantity) as amount, sum(product_price) as revenue,quantity,avg_sale from Orders,product where Orders.storage_id=product.storage_id and product.storage_id <> "" and product.storage_id is not null and order_time > DATE_SUB(curdate(), INTERVAL ? DAY) group by Orders.storage_id order by amount desc;';
 
 if ($stmt = $mysqli->prepare($sql)) {
 	$stmt->bind_param('d',$day);
 
 	$stmt->execute();
-	$stmt->bind_result($product_name, $product_id,$amount, $revenue,$quantity);
+	$stmt->bind_result($product_name, $product_id,$amount, $revenue,$quantity,$avg_sale);
 	//
 	$json = array();
 	while($stmt->fetch()){
-	      $json[] = ['product_name'=>$product_name, 'product_id'=>$product_id, 'amount'=>$amount,'revenue'=>$revenue, 'quantity'=>$quantity];
+	      $json[] = ['product_name'=>$product_name, 'product_id'=>$product_id, 'amount'=>$amount,'revenue'=>$revenue, 'quantity'=>$quantity,'avg_sale'=>$avg_sale];
 	}    
     
 }
