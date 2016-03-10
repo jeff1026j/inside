@@ -12,42 +12,8 @@ require_once (__ROOT__ . '/app/app_functions.php');
 // echo getUITOXproductSaleqty('201411AG200001614');
 // $url = "https://api.91mai.com/scm/v1/SalePage/GetMain";
 // $input = json_encode(array( "id" => 1687302));
-$skucount = getSKUCount();
- //569
-
-function updateStoreqty($storage_id, $qty){
-	global $mysqli;
-
-	$sql = "UPDATE product set quantity = ? where storage_id = ?";
-	$stmt = $mysqli->prepare($sql); 
-	$stmt->bind_param('ss',$qty,$storage_id);
-
-	$stmt->execute(); 
-	$stmt->close();  
-}
-
-function checkExisted($storage_id){
-	global $mysqli;
-
-	$result = false;
-	
-	$sql = "select count(*) as total from  product where storage_id = ?";
-
-	$stmt = $mysqli->prepare($sql); 
-	$stmt->bind_param('s',$storage_id);
-
-	$stmt->execute(); 
-	$stmt->bind_result($total);
-	$stmt->fetch();
-	$stmt->close();  
-
-	
-  	if ($total > 0) {
-		$result = true;
-	}
-	
-	return $result;
-}
+$product_id_app = 1931669;
+$product_id_warehouse = "0287872360-07";
 
 function saveProducts($data,$outerid){
 	global $mysqli;
@@ -77,8 +43,8 @@ function saveProducts($data,$outerid){
     $vendor                 = $outerid;
     $vendor_custom_numeber   = $outerid;
     $vendor_custom          = $outerid;
-    $first_stock_time       = timehandler($data->SellingStartDateTime);
-    $createtime             = timehandler($data->SellingStartDateTime);
+    $first_stock_time       = $data->SellingStartDateTime;
+    $createtime             = $data->SellingStartDateTime;
 
 //          echo "row number: # $row \n <br/><br/>";
 //          echo "order_id: $order_id, status: $status, order_time: $order_time, ship_time: $ship_time, arrive_time: $arrive_time, product_name: $product_name, product_rank: $product_rank, product_quantity: $product_quantity, product_price: $product_price, product_cost: $product_cost, product_id: $product_id, username: $username <br/><br/>";
@@ -94,47 +60,8 @@ function saveProducts($data,$outerid){
 
 }
 
-
-
-
-
-//print_r(call91api($url,$input));
-$products = array();
-
-if ($skucount->SKUCount) {
-	for ($i=0; $i < $skucount->SKUCount; $i+=500) { 
-		$products_temp = get91productList($i,500);
-		
-		if (count($products) > 0) {
-			$products = array_merge($products_temp,$products);
-		}else{
-			$products = $products_temp;
-		}
-	}	
+$data = getProductMain($product_id_app);
+if ($data) {
+	saveProducts($data,$product_id_warehouse);
 }
-
-// // echo "products: ".count($products);
-// // print_r($products);
-
-foreach ($products as $value) {
-
-	$product_id_app = $value->Id;
-	$product_id_warehouse = $value->OuterId;
-	$stock = getAppStock($product_id_app);
-	// echo "app id: $product_id_app ; code : $product_id_warehouse stock; $stock <br/>";
-
-	if (!is_null($stock) && !is_null($product_id_warehouse)) {
-		if (!checkExisted($product_id_warehouse)) {
-			# products not in databases
-			//get data from app
-			$data = getProductMain($product_id_app);
-			if ($data) {
-				saveProducts($data,$product_id_warehouse);
-			}
-
-		}
-		updateStoreqty($product_id_warehouse,$stock);
-	}
-}
-// echo "newnew";
 ?>

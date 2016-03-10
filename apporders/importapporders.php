@@ -48,7 +48,8 @@ function appOrderSaveToDB($order_time,
 	$zipcode,
 	$district,
 	$order_device,
-	$appMemberid){
+	$appMemberid,
+	$storage_id){
 
 	global $mysqli;
 
@@ -70,21 +71,24 @@ function appOrderSaveToDB($order_time,
 	// }
 
 	//get products
-	$sql2 = 'SELECT p.cost,p.product_name From product p where p.storage_id = ?';
+	if (is_null($product_cost) || $product_cost == 0) {
+		$sql2 = 'SELECT p.cost From product p where p.storage_id = ?';
 
-	$stmt2 = $mysqli->prepare($sql2); 
-	$stmt2->bind_param('s',$product_id);
+		$stmt2 = $mysqli->prepare($sql2); 
+		$stmt2->bind_param('s',$storage_id);
 
-	$stmt2->execute();
-	$stmt2->bind_result($product_cost,$product_name);
-	$stmt2->fetch();
-	$product_cost = $product_cost==""||!$product_cost||$product_cost=="NULL"||$product_cost=="0"?((int)$product_price)*0.68:$product_cost;
-	$stmt2->close();
+		$stmt2->execute();
+		$stmt2->bind_result($product_cost);
+		$stmt2->fetch();
+		$product_cost = $product_cost==""||!$product_cost||$product_cost=="NULL"||$product_cost=="0"?((int)$product_price)*0.68:$product_cost;
+		$stmt2->close();
+	}
+	
 
 	
-	$sql = "INSERT INTO Orders (order_id, status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,storage_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device, appmemberid) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE morningstage = ?;";
+	$sql = "INSERT INTO Orders (order_id, status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device, appmemberid,storage_id) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE morningstage = ?;";
     $stmt = $mysqli->prepare($sql); 
-    $stmt->bind_param('ssssssddddssssssddsssssssssss',$vendor_order_no,$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$morningstage);
+    $stmt->bind_param('ssssssddddssssssddssssssssssss',$vendor_order_no,$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$morningstage,$storage_id);
 
     $stmt->execute(); 
 
@@ -140,12 +144,14 @@ function importOrdersfrom91app($position,$count){
 	    //     );
 
 		$order_time = $v->OrderDateTime;
-		$product_name = '';
+		$product_id = getProductIdbyOuterId($v->OuterId);
+		$product_info = getProductMain($product_id);
+		$product_name = $product_info->Title;
 		$product_rank = '';
 		$product_quantity = $v->Qty;
 		$product_price = $v->Price;
-		$product_cost = null;
-		$product_id = $v->OuterId;
+		$product_cost = $product_info->Cost;
+		$storage_id = $v->OuterId;
 		$username = $v->OrderReceiverName;
 		$email = @$v->email;
 		$email = !$email?'temp@no.email':$email;
@@ -172,7 +178,7 @@ function importOrdersfrom91app($position,$count){
 		$district = $v->OrderReceiverDistrict;
 		$appMemberid = $v->MemberCode;
 
-		appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid);
+		appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid,$storage_id);
 	}
 }
 
@@ -194,4 +200,18 @@ if ($ordersCount) {
 		
 	}	
 }
+
+
+//clear the cache first
+if (!isset($_SERVER['HTTP_HOST'])) {
+	$_SERVER['HTTP_HOST'] = "www.monringshop.tw";
+}
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, 'http://'.$_SERVER['HTTP_HOST'].'/ppp.php');
+curl_setopt($ch, CURLOPT_POST, true); // 啟用POST
+curl_setopt($ch, CURLOPT_USERPWD, 'morningshop' . ":" . 'goodmorning');
+curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query( array( "url"=>'http://'.$_SERVER['HTTP_HOST'].'/')));
+curl_exec($ch);
+curl_close($ch);
+
 ?>

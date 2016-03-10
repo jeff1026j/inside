@@ -55,7 +55,10 @@
             $lastbuydate        = $data[5]; 
             $birth              = $data[12]; 
             $email              = $data[13]; 
-
+            $installapp         = $data[8]; 
+            $userfrom           = $data[7]; 
+            $totalspend         = $data[10]; 
+            $totalspendtime     = $data[11]; 
             // echo "appmemid: ".$appmemid;
             // echo "name: ".$name;
             // echo "phone: ".$phone;
@@ -64,9 +67,9 @@
             // echo "birth: ".$birth;
             // echo "email: ".$email;
 
-            $sql = "INSERT IGNORE INTO user (appmemid,name,regisdate,lastbuydate,birth,email,phone) VALUES (?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name =?,regisdate=?,lastbuydate=?,birth=?,email=?,phone=?";
+            $sql = "INSERT IGNORE INTO user (appmemid,name,regisdate,lastbuydate,birth,email,phone, installapp, userfrom, totalspend, totalspendtime ) VALUES (?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE name=?,lastbuydate=?,email=?, installapp=?, userfrom=?, totalspend=?, totalspendtime=?";
             $stmt = $mysqli->prepare($sql); 
-            $stmt->bind_param('sssssssssssss',$appmemid,$name,$regisdate,$lastbuydate,$birth,$email,$phone,$name,$regisdate,$lastbuydate,$birth,$email,$phone);
+            $stmt->bind_param('sssssssssddsssssdd',$appmemid,$name,$regisdate,$lastbuydate,$birth,$email,$phone,$installapp, $userfrom, $totalspend, $totalspendtime,$name,$lastbuydate,$email,$installapp, $userfrom, $totalspend, $totalspendtime);
 
             $stmt->execute(); 
             $stmt->close();

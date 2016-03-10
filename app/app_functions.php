@@ -81,6 +81,69 @@ function getAppStock($id){
 
 }
 
+function getProductMain($product_id){ 
+
+	$url = "https://api.91mai.com/scm/v1/Salepage/GetMain";
+	$input = json_encode(
+				array(
+					"id" => $product_id
+				)
+			);	
+	// $input2 = json_encode(
+	// 			array(
+	// 				"createdDateTimeStart" => "2013-10-01T10:03",
+	// 				"createdDateTimeEnd" => "2016-10-01T10:03",
+	// 				"position" => 499,
+	// 				"count" => 500,
+	// 				"isClosed" => ture
+	// 				)
+	// 		);
+
+	$result = json_decode(call91api($url,$input));
+	 // echo "123: <br>";
+	 //print_r($result);
+	 // echo '<br><br><br><br><br>';
+	
+	if ($result->Status != "Success") {
+		$result = null;	
+	}
+
+	return $result->Data;
+
+}
+
+function getProductIdbyOuterId($outerid){ 
+
+	$url = "https://api.91mai.com/scm/v1/Salepage/GetSkuListByOuterId";
+	$input = json_encode(
+				array(
+					"outerid" => $outerid
+				)
+			);	
+	// $input2 = json_encode(
+	// 			array(
+	// 				"createdDateTimeStart" => "2013-10-01T10:03",
+	// 				"createdDateTimeEnd" => "2016-10-01T10:03",
+	// 				"position" => 499,
+	// 				"count" => 500,
+	// 				"isClosed" => ture
+	// 				)
+	// 		);
+
+	$result = json_decode(call91api($url,$input));
+	 // echo "123: <br>";
+	 //print_r($result);
+	 // echo '<br><br><br><br><br>';
+	
+	if ($result->Status != "Success") {
+		$result = null;	
+	}
+	
+	return $result->Data[0]->Id;
+
+}
+
+
 function getSKUCount(){ //500
 
 	$url = "https://api.91mai.com/scm/v1/SalePage/GetSkuCount";

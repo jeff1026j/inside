@@ -6,7 +6,7 @@ require_once (__ROOT__ . '/config/conn_db.php');
 function getAllProduct(){
 	global $mysqli;
 	
-	$sql = 'SELECT storage_id From product';
+	$sql = 'SELECT storage_id From product where storage_id is not null';
 
 	$stmt = $mysqli->query($sql); 
 	$data = array();
@@ -23,7 +23,7 @@ function getAllProduct(){
 function saveAVGsaleDB($product_id,$sale){
 	global $mysqli;
 	
-	if (!$product_id  || $sale === null /* || !$cost */) exit("storage_id & sale  is null");
+	if (!$product_id  || $sale === null /* || !$cost */) return;
 
 	$sql = "UPDATE product set avg_sale = ? where storage_id=?";
 	$stmt = $mysqli->prepare($sql); 
@@ -37,7 +37,8 @@ function saveAVGsaleDB($product_id,$sale){
 $products = getAllProduct();
 
 foreach ($products as $value) {
-	//get products avg_sale
+	
+
 	$ch = curl_init();
 	$host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:"inside.morningshop.tw";
 	

@@ -5,7 +5,7 @@ require_once 'api/functions.php';
 
 //get the last update order set
 //get the post data
-$sql = "SELECT MAX(order_time) from Orders where order_from is null";
+$sql = "SELECT MAX(order_time) from Orders";
 $stmt = $mysqli->prepare($sql); 
 $stmt->execute(); 
 
@@ -44,7 +44,8 @@ $stmt->close();
     <script type="text/javascript" src="/js/bootstrap-table-export.js"></script>
     <script type="text/javascript" src="/js/tableExport.js"></script>
     <script type="text/javascript" src="/js/jquery.base64.js"></script>
-
+    <script type="text/javascript" src="/js/extensions/editable/bootstrap-table-editable.js"></script>
+    <script src="//rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/js/bootstrap-editable.js"></script>
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </head>
@@ -77,4 +78,4 @@ $stmt->close();
                         </div>
                     </nav>
                     <div class="row">
-                        <div class="formcolumn col-xs-10 col-centered">
+                        <div class="formcolumn col-xs-13 col-centered">

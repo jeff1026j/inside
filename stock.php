@@ -16,6 +16,7 @@
     <div role="tabpanel" class="tab-pane active" id="home">
         <!--<form class="form-inline">-->
         <div class="top-buffer"></div>
+
         <!-- <div class="form-group"> 
             <label class="radio-inline">
             <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="3" checked="checked"> 3天
@@ -29,15 +30,22 @@
             <!-- <button class="btn btn-warning Return export-button">Export</button>
        </div> -->
         <!--</form>-->
-
-        <table data-toggle="table" data-url="/api/getProductsNew.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true">
+        <div id="toolbar">
+            <button id="button" class="btn btn-default">remove</button>
+        </div>
+        <table data-toggle="table" data-url="/api/getProductsNew.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-toolbar="#toolbar">
             <thead>
                 <tr>
+                    <th data-field="state" data-checkbox="true"></th>
+                    <th data-field="product_id">id</th>
                     <th data-field="product_name">產品</th>
-                    <th data-field="storage_id">倉庫編碼</th>
+                    <th data-field="storage_id" data-editable="true">倉庫編碼</th>
+                    <th data-field="tradebuy" data-editable="true" data-sortable="true">切貨1</th>
+                    <th data-field="price" data-editable="true" data-sortable="true">價格</th>
+                    <th data-field="cost" data-editable="true">成本</th>
                     <th data-field="avg_sale" data-sortable="true">平均月銷量</th>
                     <th data-field="quantity" data-sortable="true">庫存</th>
-                    <th data-field="seller" data-sortable="true">負責人員</th>
+                    <th data-field="seller" data-sortable="true" data-editable="true">負責人員</th>
                 </tr>
             </thead>
         </table>
@@ -112,6 +120,60 @@
 <script>
     $( document ).ready(function() {
         var defaultUrl="/api/getProducts.php";
+        var $table = $('#productTable'),
+        $button = $('#button');
+
+
+
+        $('#productTable').on('editable-save.bs.table', foo);
+        
+        $button.click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.product_id;
+            });
+            $table.bootstrapTable('remove', {
+                field: 'product_id',
+                values: ids
+            });
+        });
+
+
+        function foo(field, row, oldValue, $el) {
+            //console.log(row);
+            //console.log(field);
+            var revised = { "product_id": oldValue.product_id,"price":oldValue.price ,"cost":oldValue.cost,"quantity":oldValue.quantity, "seller": oldValue.seller,"tradebuy": oldValue.tradebuy,"storage_id": oldValue.storage_id,"field":row};
+            
+            $button.click(function () {
+                var ids = $.map($('#productTable').bootstrapTable('getSelections'), function (row) {
+                    return row.product_id;
+                });
+                $table.bootstrapTable('remove', {
+                    field: 'product_id',
+                    values: ids
+                });
+
+            });
+
+            //JSON.stringify(oldValue)
+             $.ajax({
+                type:"POST",
+                url: "/api/updateProducts.php",
+                data: revised,
+                dataType:'text',
+                headers: {
+                    "Authorization": "Basic " + btoa("morningshop" + ":" + "goodmorning")
+                },
+                success: function(msg){
+                    //alert(msg);
+                    console.log(msg);
+
+                },
+                 error:function(xhr, ajaxOptions, thrownError){ 
+                    //alert(xhr.status); 
+                    alert(thrownError); 
+                 }
+            });
+        }
     });     
 </script>
 

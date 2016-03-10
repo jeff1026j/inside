@@ -12,7 +12,7 @@
                                       <option>賣場商品AM</option>
                                       <option>會員</option>
                                       <option>倉庫商品轉移</option>
-                                      
+                                      <option>叫貨表轉移</option>
                                   </select>
                                 </div>
                             </div>
@@ -73,8 +73,9 @@ $( "select" )
             url = "parseUserfile.php";
         }else if(str=="倉庫商品轉移"){
             url = "newWareHouseProcess.php";
+        }else if(str=="叫貨表轉移"){
+            url = "uploadaskProductprocess.php";
         }  
-        
         $("#fileUpload").attr("action", url);
     });
 });
