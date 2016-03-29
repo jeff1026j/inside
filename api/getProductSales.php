@@ -5,7 +5,7 @@ require_once (__ROOT__ . '/config/config_db.php');
 require_once (__ROOT__ . '/config/conn_db.php');
 require_once (__ROOT__ . '/config/deconfig.php');
 
-$day = isset($_GET['day'])?$_GET['day']:3;
+$day = isset($_GET['day'])?$_GET['day']:1;
 // $get_values = array();
 // echo 'test:' . $_GET['numberOfReturn'];
 

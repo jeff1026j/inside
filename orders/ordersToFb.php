@@ -21,14 +21,32 @@ function getEmailsforDays($days){
 	global $mysqli;
 
 	  //count all orders and customers
-	$sql = 'SELECT Distinct email, phone FROM Orders O1 where order_time > DATE_SUB(curdate(), INTERVAL ? DAY) ;';
+	$sql = 'SELECT distinct o2.email, 
+                u.email AS appemail, 
+                o2.phone
+			FROM   (SELECT Distinct email, 
+			                        username, 
+			                        phone, 
+			                        appmemberid 
+			        FROM   Orders O1 
+			        where  order_time > DATE_SUB(curdate(), INTERVAL ? day)) o2 
+			       LEFT JOIN user u 
+              ON u.phone = o2.phone; ';
+
+
 	$stmt = $mysqli->prepare($sql);
 	$stmt->bind_param('d',$days);
     $stmt->execute();
 
-	$stmt->bind_result($email,$phone);
+	$stmt->bind_result($email,$appemail,$phone);
 	$emails = array();
 	while($stmt->fetch()){
+		  // echo "email: ".$email."  appemail: ".$appemail."<br>";
+
+		  $email = $email == "temp@no.email" && !is_null($appemail) ? $appemail : $email;
+		  $email = $email == "" || is_null($email) ? "temp@no.email" : $email;
+		  $email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
+		  // echo "newemail: ".$email."<br>";
 	      $emails[] = ["email" => trim($email),"phone"=>"886".ltrim(trim($phone),'0')];
 	}
     $stmt->close();	
@@ -36,6 +54,7 @@ function getEmailsforDays($days){
 }
 
 $output = getEmailsforDays(4);
+
 $today = date("Y_m_d");
 $file = 'orderstofb_'.$today.'.csv';
 $path = __ROOT__ .'/tmp/';

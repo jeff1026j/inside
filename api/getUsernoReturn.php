@@ -22,27 +22,45 @@ $minDate = $minDate->modify( '- '.$minInterval.' days')->format('Y-m-d');
 
 // echo "maxDate: ".$maxDate.";   minDate: ".$minDate.";   cd: ".$currentDate;
  
-$sql="SELECT newestOrders.email,newestOrders.username, newestOrders.max_order_time, GROUP_CONCAT(O2.product_name SEPARATOR ', ')
-      FROM (SELECT O1.email, O1.".cohortkey.", MAX(O1.order_time) as max_order_time, O1.username
-            FROM Orders as O1   
-            WHERE O1.order_time < ?
-            GROUP By O1.".cohortkey.") as newestOrders, Orders O2
-      WHERE newestOrders.max_order_time > ? 
-      AND newestOrders.max_order_time < ?
-	AND O2.".cohortkey." = newestOrders.".cohortkey."
-	GROUP BY newestOrders.".cohortkey."
-      ;
-";
+$sql="select distinct o2.email, 
+                u.email as appemail, 
+                o2.phone,
+                o2.username, 
+                o2.max_order_time, 
+                o2.previouspur 
+      from   (select newestOrders.email, 
+                     newestOrders.username, 
+                     newestOrders.max_order_time, 
+                     O2.phone,
+                     GROUP_CONCAT(O2.product_name separator ', ') as previouspur,
+                     O2.appmemberid
+              from   (select O1.email, 
+                             O1.".cohortkey.", 
+                             MAX(O1.order_time) as max_order_time, 
+                             O1.username 
+                      from   Orders as O1 
+                      where  O1.order_time < ? 
+                      group  by O1.".cohortkey.") as newestOrders, 
+                     Orders O2 
+              where  newestOrders.max_order_time > ? 
+                     and newestOrders.max_order_time < ? 
+                     and O2.".cohortkey." = newestOrders.".cohortkey." 
+              group  by newestOrders.".cohortkey.") o2 
+             left join user u 
+                    on u.phone = o2.phone;";
 		
 
 $stmt = $mysqli->prepare($sql); 
 $stmt->bind_param('sss',$currentDate,$maxDate,$minDate);
 
 $stmt->execute();
-$stmt->bind_result($email, $username, $max_order_time,$product_name);
+$stmt->bind_result($email,$appemail,$phone, $username, $max_order_time,$product_name);
 //
 $json = array();
 while($stmt->fetch()){
+      $email = $email == "temp@no.email" && !is_null($appemail) ? $appemail : $email;
+      $email = $email == "" || is_null($email) ? "temp@no.email" : $email;
+      $email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
       $json[] = ['user_name'=>$username, 'email'=>$email,'max_order_time'=>$max_order_time, 'product'=>$product_name];
 }
 echo json_encode($json);

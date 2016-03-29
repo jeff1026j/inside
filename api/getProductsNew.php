@@ -17,7 +17,13 @@ if ($stmt = $mysqli->prepare($sql)) {
 	
 	$json = array();
 	while($stmt->fetch()){
-	      $json[] = ['product_id'=>$product_id,'product_name'=>$product_name, 'storage_id'=>$storage_id,'tradebuy'=>$tradebuy,'price'=>$price,'cost'=>$cost, 'avg_sale'=>$avg_sale,'quantity'=>$quantity, 'seller'=>$seller];
+		
+		$exclude_products = array("1931669","1747407","1878702","201512AG100008233","201512AG100011555","201507AG020002210","201507AG020002130","201507AG020002222","201509AG180005002");
+		
+		if (!in_array($product_id,$exclude_products)) {
+			$json[] = ['product_id'=>$product_id,'product_name'=>$product_name, 'storage_id'=>$storage_id,'tradebuy'=>$tradebuy,'price'=>$price,'cost'=>$cost, 'avg_sale'=>$avg_sale,'sale_day' => floor(($quantity/$avg_sale)*30) ,'quantity'=>$quantity, 'seller'=>$seller];	
+		}
+		
 	}    
     
 }

@@ -27,24 +27,55 @@ for ($i = 0; $i < count($numberOfReturn); $i++) {
 
 }
 
-$sql='SELECT O2.username,uniO.email, uniO.returnCustomer, uniO.max_order_time, O2.phone, GROUP_CONCAT(O2.product_name SEPARATOR ", ")
-FROM (	SELECT O1.email,O1.'.cohortkey.',  COUNT(DISTINCT O1.order_id) as returnCustomer, MAX(O1.order_time) as max_order_time
-		FROM Orders as O1 
-		GROUP By O1.'.cohortkey.' HAVING('.$sql_number .') 
-		order by max_order_time
-		) uniO, Orders O2
-WHERE uniO.'.cohortkey.' = O2.'.cohortkey.' AND O2.email <> "morning@ouregion.com" AND O2.email <> "jpj0121@hotmail.com" AND O2.email <> "jake.tzeng@gmail.com" AND O2.email <> "iqwaynewang@gmail.com"
-GROUP BY uniO.'.cohortkey.';';
+$sql='select distinct o3.username, 
+				o3.email, 
+                u.email as appemail, 
+                o3.returncustomer, 
+                o3.max_order_time, 
+                o3.phone,
+                o3.previouspur
+		from            ( 
+		                         select   o2.username, 
+		                                  unio.email, 
+		                                  unio.returncustomer, 
+		                                  unio.max_order_time, 
+		                                  o2.phone, 
+		                                  group_concat(o2.product_name separator ", ") as previouspur,
+		                                  o2.appmemberid
+		                         from     ( 
+		                                           select   o1.email, 
+		                                                    o1.'.cohortkey.', 
+		                                                    count(distinct o1.order_id) as returncustomer,
+		                                                    max(o1.order_time)          as max_order_time 
+		                                           from     Orders                      as o1 
+		                                           group by o1.'.cohortkey.' 
+		                                           having  ( 
+		                                                             '.$sql_number .') 
+		                                           order by max_order_time ) unio, 
+		                                  Orders o2 
+		                         where    unio.'.cohortkey.' = o2.'.cohortkey.' 
+		                         and      o2.email <> "morning@ouregion.com" 
+		                         and      o2.email <> "jpj0121@hotmail.com" 
+		                         and      o2.email <> "jake.tzeng@gmail.com" 
+		                         and      o2.email <> "iqwaynewang@gmail.com" 
+		                         group by unio.'.cohortkey.' ) o3
+		left join       user u 
+		on              u.phone = o3.phone;
+';
 
 $stmt = $mysqli->prepare($sql); 
 //$stmt->bind_param('d',$numberOfReturn);
 
 $stmt->execute();
-$stmt->bind_result($username, $email,$returnCustomer, $max_order_time, $phone, $product);
+$stmt->bind_result($username, $email,$appemail,$returnCustomer, $max_order_time, $phone, $product);
 //
 $json = array();
 while($stmt->fetch()){
-      $json[] = ['user_name'=>$username, 'email'=>$email, 'returnCustomer'=>$returnCustomer,'max_order_time'=>$max_order_time, 'phone'=>$phone, 'product'=>$product];
+	$email = $email == "temp@no.email" && !is_null($appemail) ? $appemail : $email;
+	$email = $email == "" || is_null($email) ? "temp@no.email" : $email;
+	$email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
+
+	$json[] = ['user_name'=>$username, 'email'=>$email, 'returnCustomer'=>$returnCustomer,'max_order_time'=>$max_order_time, 'phone'=>$phone, 'product'=>$product];
 }
 echo json_encode($json);
 

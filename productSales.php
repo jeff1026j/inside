@@ -18,7 +18,10 @@
         <div class="top-buffer"></div>
         <div class="form-group"> 
             <label class="radio-inline">
-            <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="3" checked="checked"> 3天
+            <input type="radio" name="inlineRadioOptions" id="inlineRadio0" value="1" checked="checked"> 昨到今天
+            </label>
+            <label class="radio-inline">
+            <input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="3" > 3天
             </label>
             <label class="radio-inline">
             <input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="14"> 2 週
@@ -30,7 +33,7 @@
        </div>
         <!--</form>-->
 
-        <table data-toggle="table" data-url="/api/getProductSales.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-query-params="queryParams" data-pagination="true" data-page-size="50">
+        <table data-toggle="table" data-url="/api/getProductSales.php" data-search="true" id="productTable" data-row-style="rowStyle" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-query-params="queryParams" data-pagination="true" data-page-size="50">
             <thead>
                 <tr>
                     <th data-field="product_name">產品</th>
@@ -110,6 +113,18 @@
 </div>
 
 <script>
+    function rowStyle(row, index) {
+        //console.log(row);
+        var avg_sale = row.avg_sale;
+        var qty = row.quantity;
+
+        if ( qty < avg_sale/2) {
+            return {
+                classes: "danger"
+            };
+        }
+        return {};
+    }
     function queryParams() {
         return {
             per_page: 100,
@@ -122,7 +137,7 @@
         var defaultUrl="/api/getProductSales.php";
         $("input:radio[name=inlineRadioOptions]").click(function() {
             var value = $(this).val();
-            console.log(defaultUrl+'?day='+value);
+            // console.log(defaultUrl+'?day='+value);
             $('#productTable').bootstrapTable('refresh', {
                url: defaultUrl+'?day='+value
             });

@@ -33,17 +33,18 @@
         <div id="toolbar">
             <button id="button" class="btn btn-default">remove</button>
         </div>
-        <table data-toggle="table" data-url="/api/getProductsNew.php" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-toolbar="#toolbar">
+        <table data-toggle="table" data-url="/api/getProductsNew.php" data-row-style="rowStyle" data-search="true" id="productTable" data-sort-name="name" data-sort-order="desc" data-show-export="true" data-toolbar="#toolbar" data-height="1200" >
             <thead>
                 <tr>
-                    <th data-field="state" data-checkbox="true"></th>
+                    <th data-field="state" data-checkbox="true">check</th>
                     <th data-field="product_id">id</th>
-                    <th data-field="product_name">產品</th>
+                    <th data-field="product_name" data-sortable="true">產品</th>
                     <th data-field="storage_id" data-editable="true">倉庫編碼</th>
                     <th data-field="tradebuy" data-editable="true" data-sortable="true">切貨1</th>
                     <th data-field="price" data-editable="true" data-sortable="true">價格</th>
                     <th data-field="cost" data-editable="true">成本</th>
                     <th data-field="avg_sale" data-sortable="true">平均月銷量</th>
+                    <th data-field="sale_day" data-sortable="true" data-cell-style="cellStyle">周轉天</th>
                     <th data-field="quantity" data-sortable="true">庫存</th>
                     <th data-field="seller" data-sortable="true" data-editable="true">負責人員</th>
                 </tr>
@@ -118,12 +119,42 @@
 </div>
 
 <script>
+    function rowStyle(row, index) {
+        //console.log(row);
+        var avg_sale = row.avg_sale;
+        var qty = row.quantity;
+        var name = row.product_name;
+
+        // if (name.toLowerCase().indexOf("早餐盒") > 0) {
+        //     return {
+        //             classes: "hidden"
+        //         };
+        // };
+
+        if ( qty < avg_sale/2) {
+            return {
+                classes: "danger"
+            };
+        }
+        return {};
+    }
+    function cellStyle(value, row, index) {
+      
+      var sale_day = row.sale_day;
+
+      if (sale_day > 60) {
+        return {
+            classes: 'text-nowrap another-class',
+            css: {"color": "red", "font-weight": "bold"}
+          };  
+      };
+      
+      return {};
+
+    }
     $( document ).ready(function() {
-        var defaultUrl="/api/getProducts.php";
         var $table = $('#productTable'),
         $button = $('#button');
-
-
 
         $('#productTable').on('editable-save.bs.table', foo);
         
@@ -137,23 +168,12 @@
             });
         });
 
-
+        
         function foo(field, row, oldValue, $el) {
             //console.log(row);
             //console.log(field);
             var revised = { "product_id": oldValue.product_id,"price":oldValue.price ,"cost":oldValue.cost,"quantity":oldValue.quantity, "seller": oldValue.seller,"tradebuy": oldValue.tradebuy,"storage_id": oldValue.storage_id,"field":row};
             
-            $button.click(function () {
-                var ids = $.map($('#productTable').bootstrapTable('getSelections'), function (row) {
-                    return row.product_id;
-                });
-                $table.bootstrapTable('remove', {
-                    field: 'product_id',
-                    values: ids
-                });
-
-            });
-
             //JSON.stringify(oldValue)
              $.ajax({
                 type:"POST",

@@ -88,7 +88,7 @@ function appOrderSaveToDB($order_time,
 	
 	$sql = "INSERT INTO Orders (order_id, status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device, appmemberid,storage_id) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE morningstage = ?;";
     $stmt = $mysqli->prepare($sql); 
-    $stmt->bind_param('ssssssddddssssssddssssssssssss',$vendor_order_no,$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$morningstage,$storage_id);
+    $stmt->bind_param('ssssssddddssssssddssssssssssss',$vendor_order_no,$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$storage_id,$morningstage);
 
     $stmt->execute(); 
 
@@ -200,7 +200,6 @@ if ($ordersCount) {
 		
 	}	
 }
-
 
 //clear the cache first
 if (!isset($_SERVER['HTTP_HOST'])) {

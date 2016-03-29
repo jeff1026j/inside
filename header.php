@@ -32,11 +32,11 @@ $stmt->close();
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css">
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/bootstrap-table.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
     <!-- Latest compiled and minified Locales -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/locale/bootstrap-table-zh-TW.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/locale/bootstrap-table-zh-TW.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
     <link rel="stylesheet" href="/css/datepicker3.css">
     <script type="text/javascript" src="/js/table2CSV.js"></script>
@@ -45,7 +45,7 @@ $stmt->close();
     <script type="text/javascript" src="/js/tableExport.js"></script>
     <script type="text/javascript" src="/js/jquery.base64.js"></script>
     <script type="text/javascript" src="/js/extensions/editable/bootstrap-table-editable.js"></script>
-    <script src="//rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/js/bootstrap-editable.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     </head>

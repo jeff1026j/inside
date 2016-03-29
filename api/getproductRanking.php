@@ -9,12 +9,12 @@ $numberOfReturn = isset($_GET['numberOfReturn'])?$_GET['numberOfReturn']:1;
 
 $sql = "SELECT USERPRODUCT.product_name, SUM(USERPRODUCT.productRanking) AS finalScore 
 FROM
-    ( SELECT O3.email, O3.".cohortkey.", O3.product_name,count(*) as productRanking 
+    ( SELECT O3.email, O3.".cohortkey.", O3.product_name,O3.storage_id,count(*) as productRanking 
       FROM Orders O3, (SELECT O1.email, O1.".cohortkey." , COUNT(DISTINCT O1.order_id) as returnCustomer 
                        FROM Orders as O1 GROUP By O1.".cohortkey." HAVING returnCustomer > 1) O2 
       WHERE O3.".cohortkey." = O2.".cohortkey."
-      Group by O3.".cohortkey.", O3.product_name HAVING productRanking > ? ) AS USERPRODUCT 
-GROUP BY USERPRODUCT.product_name order by finalScore desc;";
+      Group by O3.".cohortkey.", O3.storage_id HAVING productRanking > ? ) AS USERPRODUCT 
+GROUP BY USERPRODUCT.storage_id order by finalScore desc;";
 
 $stmt = $mysqli->prepare($sql); 
 $stmt->bind_param('d',$numberOfReturn);
