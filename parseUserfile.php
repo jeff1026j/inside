@@ -23,6 +23,7 @@
     $del = detectDelimiter($rawfilename);
    
     // echo "del:".$del."end";
+    $type = 0;
 
     if (($handle = fopen($rawfilename, "r")) !== FALSE) {
         $data = fgetcsv($handle, 1000000, $del);
@@ -32,20 +33,30 @@
              !strstr($data[2],'會員姓名')||   
              !strstr($data[3],'手機號碼')|| 
              !strstr($data[4],'註冊日期')|| 
-             !strstr($data[5],'最後消費日期')|| 
-             !strstr($data[12],'生日')|| 
-             !strstr($data[13],'電子郵件')
+             !strstr($data[5],'最後消費日期')
              ){ 
+
             $fileValid = false;
             $errorCode = "01";    
         }
     
         if(!$fileValid)
             break;
+        if (strstr($data[14],'生日')) {
+                $type = 1;
+        }elseif (strstr($data[11],'生日')) {
+            $type = 2;
+        }else{
+            $type = false;
+        }
 
     }
+
+    
+    
+
     //parse data~
-    if (($handle = fopen($rawfilename, "r")) !== FALSE && $fileValid) {
+    if (($handle = fopen($rawfilename, "r")) !== FALSE && $fileValid && $type) {
         while (($data = fgetcsv($handle, 1000000, $del)) !== FALSE) {
             $num = count($data);
             $appmemid           = $data[0]; 
@@ -53,12 +64,27 @@
             $phone              = $data[3]; 
             $regisdate          = $data[4]; 
             $lastbuydate        = $data[5]; 
-            $birth              = $data[12]; 
-            $email              = $data[13]; 
-            $installapp         = $data[8]; 
             $userfrom           = $data[7]; 
-            $totalspend         = $data[10]; 
-            $totalspendtime     = $data[11]; 
+
+            if ($type==1) {
+                $installapp         = $data[8]; 
+                $totalspend         = $data[10]; 
+                $totalspendtime     = $data[11]; 
+                $birth              = $data[14]; 
+                $email              = $data[15];     
+
+            }else if ($type ==2) {
+                $installapp         = "無"; 
+                $totalspend         = $data[9]; 
+                $totalspendtime     = $data[10]; 
+                $birth              = $data[11]; 
+                $email              = $data[12];     
+            }
+
+            
+
+
+
             // echo "appmemid: ".$appmemid;
             // echo "name: ".$name;
             // echo "phone: ".$phone;

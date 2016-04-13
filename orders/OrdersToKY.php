@@ -30,8 +30,23 @@ function kylistupdatebatch($json_input,$list_id){
 	// false 時只回傳成功與否
 	$result = curl_exec($ch); 
 	curl_close($ch);
-	echo $result;
+	// echo $result;
 
+}
+
+function phpCurl($url){
+	// 建立CURL連線
+	$ch = curl_init();
+
+	// 設定擷取的URL網址
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_HEADER, false);
+
+	// 執行
+	curl_exec($ch);
+
+	// 關閉CURL連線
+	curl_close($ch);
 }
 
 function getOrdersforDaysKY($days){
@@ -104,12 +119,11 @@ $json = json_encode($kyformat);
 
 kylistupdatebatch($json,'iUppsW');
 $metric = "buy";
-// $tracker = new Klaviyo(kykey);
+$tracker = new Klaviyo(kykey);
 
-
-// $tracker->track(
+// echo $tracker->track(
 // 		    $metric,
-// 		    array('$id' => $id , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
+// 		    array('$id' => $id, '$email' => $email , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
 // 		    array('Items' => $items,'Order Time'=>$order_time,'Order Amount'=>$amount),
 // 		    $timestamp
 // 		);	
@@ -123,9 +137,7 @@ $array = array(
 	"time" => 1458972846
 );
 
-echo base64_encode(json_encode($array));
-
-// curl https://a.klaviyo.com/api/track?data=eyJ0b2tlbiI6ImM3M01rVyIsImV2ZW50IjoiYnV5IiwiY3VzdG9tZXJfcHJvcGVydGllcyI6eyIkaWQiOiIwOTExMTExMTExIn0sInRpbWUiOjE0NTg5NzI4NDZ9
+echo "https://a.klaviyo.com/api/track?data=".base64_encode(json_encode($array));
 
 // ordersProcess();
 

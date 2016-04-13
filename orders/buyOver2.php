@@ -86,7 +86,117 @@ function getEmailsOvertwo(){
 	return $data;
 }
 
+function getProductsBuylist($product_name){
+	global $mysqli;
+
+	$data = array();
+	$product_sql = "";
+	//count all orders and customers
+	
+	//if it has multiple products
+	if(is_array($product_name)){
+		$i=0;
+		foreach ($product_name as $value) {
+			$pre_product_sql = $i==0 ? "" : "or";
+			$product_sql .=  $pre_product_sql.' product_name like \'%'.$value.'%\'';
+			$i++;
+		}
+
+	}else{
+		$product_sql .= ' product_name like \'%'.$product_name.'%\'';
+	}
+
+	$sql = 'SELECT distinct o2.email, 
+			          u.email AS appemail, 
+			          o2.username, 
+			          o2.phone, 
+			          o2.appmemberid 
+			FROM      ( 
+			                   SELECT   o1.email, 
+			                            o1.username, 
+			                            o1.'.cohortkey.', 
+			                            o1.appmemberid 
+			                   FROM     Orders AS o1 
+			                   WHERE '.$product_sql.'
+			                    ) o2 
+			LEFT JOIN user u 
+			ON u.phone = o2.phone;';
+
+	$stmt = $mysqli->prepare($sql);
+    $stmt->execute();
+
+	$stmt->bind_result($email, $appemail, $username, $phone, $appmemberid);
+
+	while($stmt->fetch()){
+		$email = $email == "temp@no.email" && !is_null($appemail) ? $appemail : $email;
+		$email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
+		
+		if($email == "" || is_null($email) || $email == "temp@no.email") continue;
+		
+		$data[] = array('email'=>$email,'username'=>$username,'phone'=>(string) $phone , 'appmemberid'=>$appmemberid);
+		
+	}
+
+    $stmt->close();	
+	return $data;
+}
+
+function getListBytime($minTime, $maxTime){
+	global $mysqli;
+
+	$data = array();
+	  //count all orders and customers
+	$sql = 'SELECT distinct o2.email, 
+			          u.email AS appemail, 
+			          o2.username, 
+			          o2.phone, 
+			          o2.appmemberid,
+			          o2.order_time
+			FROM      ( 
+			                   SELECT   o1.email, 
+			                            o1.username, 
+			                            o1.'.cohortkey.', 
+			                            o1.appmemberid,
+			                            o1.order_time 
+			                   FROM     Orders AS o1 
+			                   WHERE order_time > "'.$minTime.'" and order_time < "'.$maxTime.'"
+			                    ) o2 
+			LEFT JOIN user u 
+			ON u.phone = o2.phone;';
+	
+	$stmt = $mysqli->prepare($sql);
+    $stmt->execute();
+
+	$stmt->bind_result($email, $appemail, $username, $phone, $appmemberid,$order_time);
+
+	while($stmt->fetch()){
+		$email = $email == "temp@no.email" && !is_null($appemail) ? $appemail : $email;
+		$email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
+		
+		if($email == "" || is_null($email) || $email == "temp@no.email") continue;
+		
+		$data[] = array('email'=>$email,'username'=>$username,'phone'=>(string) $phone , 'appmemberid'=>$appmemberid, 'order_time'=>$order_time);
+		
+	}
+
+    $stmt->close();	
+	return $data;
+}
+
+$kylistId = 'jX3eXK';
 $output = getEmailsOvertwo();
+//getProductsBuylist( array('Kiwigarden','親子御膳坊','NurturMe','babybio','Organix','幸福米寶','農純鄉','imeal','芭芭拉','歐佳','寶寶'));
+//getEmailsOvertwo();
+
+// $output = getProductsBuylist('早餐盒');
+
+// $minTime = (new DateTime())->modify('-75 days')->format('Y-m-d');
+// $maxTime = (new DateTime())->modify('-30 days')->format('Y-m-d');
+
+// $output = getListBytime($minTime,$maxTime);
+
+
+
 // $today = date("Y_m_d");
 // $file = 'ordersOverTwo_'.$today.'.csv';
 // $path = __ROOT__ .'/tmp/';
@@ -125,6 +235,8 @@ $output = getEmailsOvertwo();
 //     echo 'Message has been sent';
 // }
 
+// print_r($output);
+
 $kyformat = array();
 
 foreach ($output as $v) {
@@ -150,7 +262,7 @@ for ($i=0; $i < count($kyformat); $i+=100) {
 	$kyforamtjson = json_encode($kyformatpage);
 
 	//echo "kypaging: index: $i, kyarray: ".$kyforamtjson."<br><br><br><br><br><br>";
-	kylistupdatebatch($kyforamtjson,"jX3eXK");
+	kylistupdatebatch($kyforamtjson,$kylistId);
 }	
 
 

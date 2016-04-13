@@ -58,6 +58,7 @@ $sql='select distinct o3.username,
 		                         and      o2.email <> "jpj0121@hotmail.com" 
 		                         and      o2.email <> "jake.tzeng@gmail.com" 
 		                         and      o2.email <> "iqwaynewang@gmail.com" 
+		                         and      o2.order_time = unio.max_order_time
 		                         group by unio.'.cohortkey.' ) o3
 		left join       user u 
 		on              u.phone = o3.phone;
