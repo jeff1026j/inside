@@ -2,17 +2,17 @@
     require_once 'header.php';
 ?>
             			<h3>Upload csv file - UTF8 only</h3>
-                        <form id="fileUpload" class="form-horizontal" action="uploadprocess.php" method="post" enctype="multipart/form-data" onsubmit="return Validate(this);">
+                        <form id="fileUpload" class="form-horizontal" action="parseUserfile.php" method="post" enctype="multipart/form-data" onsubmit="return Validate(this);">
             			    <div class="top-buffer form-group">
                                 <label class="text-left col-sm-2 control-label">檔案資料</label>
                                 <div class="col-sm-10">
                                   <select class="form-control">
-                                      <option>訂單</option>
+                                      <!-- <option>訂單</option>
                                       <option>商品</option>
-                                      <option>賣場商品AM</option>
+                                      <option>賣場商品AM</option> -->
                                       <option>會員</option>
-                                      <option>倉庫商品轉移</option>
-                                      <option>叫貨表轉移</option>
+                                      <!-- <option>倉庫商品轉移</option>
+                                      <option>叫貨表轉移</option> -->
                                   </select>
                                 </div>
                             </div>

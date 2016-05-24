@@ -56,7 +56,7 @@ function getOrdersforDaysKY($days){
 	$tempOrder = array();
 
 	  //count all orders and customers
-	$sql = 'SELECT O1.phone,O1.order_id, O1.email,U.email as appemail, O1.username, O1.first_order_time,O1.last_order_interval,O1.product_name,O1.total_payment,O1.order_time, O1.appmemberid  FROM Orders O1 LEFT JOIN user U on U.phone = O1.phone where order_time > DATE_SUB(curdate(), INTERVAL ? DAY) order by O1.order_id;';
+	$sql = 'SELECT O1.phone,O1.order_id, O1.email,U.email as appemail, O1.username, O1.first_order_time,O1.last_order_interval,O1.product_name,O1.total_payment,O1.order_time, O1.appmemberid  FROM Orders O1 LEFT JOIN user U on U.phone = O1.phone where order_time > DATE_SUB(curdate(), INTERVAL ? DAY) and first_order_time is not null order by O1.order_id;';
 	$stmt = $mysqli->prepare($sql);
 	$stmt->bind_param('d',$days);
     $stmt->execute();
@@ -95,89 +95,90 @@ function ordersProcess(){
     curl_close($ch);	
 }
 
-$id = "0911111111";
-$email = "xxdfdf@gmail.xxx";
-$last_name = "xxx";
-$name = $last_name;
-$phone = $id; 
-$firstordertime = "2016-03-22";
-$order_time = $firstordertime;
-$appmemberid="1233445";
-$items="xx";
-$amount=100;
-$timestamp = strtotime("now");
+// $id = "0911111111";
+// $email = "xxdfdf@gmail.xxx";
+// $last_name = "xxx";
+// $name = $last_name;
+// $phone = $id; 
+// $firstordertime = "2016-03-22";
+// $order_time = $firstordertime;
+// $appmemberid="1233445";
+// $items="xx";
+// $amount=100;
+// $timestamp = strtotime("now");
 
-$kyformat[] = array('email' => $email,
-		"properties"=> 
-			array('$first_name' => "　",
-				'$last_name' => $last_name,
-				'$phone_number' => $id, 
-				'$id' =>  $id)
-			);
+// $kyformat[] = array('email' => $email,
+// 		"properties"=> 
+// 			array('$first_name' => "　",
+// 				'$last_name' => $last_name,
+// 				'$phone_number' => $id, 
+// 				'$id' =>  $id)
+// 			);
 
-$json = json_encode($kyformat);
+// $json = json_encode($kyformat);
 
-kylistupdatebatch($json,'iUppsW');
-$metric = "buy";
-$tracker = new Klaviyo(kykey);
-
-// echo $tracker->track(
-// 		    $metric,
-// 		    array('$id' => $id, '$email' => $email , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
-// 		    array('Items' => $items,'Order Time'=>$order_time,'Order Amount'=>$amount),
-// 		    $timestamp
-// 		);	
-
-$array = array(
-	"token" => "c73MkW",
-	"event" => "buy",
-	"customer_properties" => array(
-	  '$id' => $id,
-	),
-	"time" => 1458972846
-);
-
-echo "https://a.klaviyo.com/api/track?data=".base64_encode(json_encode($array));
-
-// ordersProcess();
-
+// kylistupdatebatch($json,'iUppsW');
 // $metric = "buy";
 // $tracker = new Klaviyo(kykey);
 
-// $orders = getOrdersforDaysKY(11);
+// // echo $tracker->track(
+// // 		    $metric,
+// // 		    array('$id' => $id, '$email' => $email , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
+// // 		    array('Items' => $items,'Order Time'=>$order_time,'Order Amount'=>$amount),
+// // 		    $timestamp
+// // 		);	
 
-// foreach ($orders as $value) {
-// 	$email = $value['email'] == "temp@no.email" && !is_null($value['appemail']) ? $value['appemail'] : $value['email'];
-// 	$email = $email == "" || is_null($email) ? "temp@no.email" : $email;
-//  $email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
-// 	$id = $value['phone'];
-// 	$name = $value['username'];
-// 	$phone = $value['phone'];
-// 	$firstordertime = $value['first_order_time'];
-// 	// $last_order_interval = $value['last_order_interval'];
-// 	$items = $value['items'];
-// 	$order_time = $value['order_time'];
-// 	$amount = $value['total_payment'];
-// 	$timestamp = strtotime("now");
-// 	//strtotime($order_time);
-// 	$appmemberid = $value['appmemberid'];
+// $array = array(
+// 	"token" => "c73MkW",
+// 	"event" => "buy",
+// 	"customer_properties" => array(
+// 	  '$id' => $id,
+// 	),
+// 	"time" => 1458972846
+// );
 
-// 	if ($email != "temp@no.email" && !is_null($email)) {
-// 		echo "email: ".$email."\n";
-// 		echo "phone: ".$phone."\n";
-// 		echo "id: ".$id."\n";
+// echo "https://a.klaviyo.com/api/track?data=".base64_encode(json_encode($array));
 
-// 		$tracker->track(
-// 		    $metric,
-// 		    array('$id' => $id,'$email' => $email , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
-// 		    array('Items' => $items,'Order Time'=>$order_time,'Order Amount'=>$amount),
-// 		    $timestamp
-// 		);	
-// 	}
+ordersProcess();
 
-// 	// echo "email: ".$email.'<br>';
+$metric = "buy";
+$tracker = new Klaviyo(kykey);
+
+$orders = getOrdersforDaysKY(6);
+
+foreach ($orders as $value) {
+	$appemail = $value['appemail'];
+	$email = $value['email'] == "temp@no.email" && !is_null($appemail) ? $appemail : $value['email'];
+	$email = $email == "" || is_null($email) ? "temp@no.email" : $email;
+ 	$email = $appemail != "" && !is_null($appemail) ? $appemail : $email;
+	$id = $email;
+	$name = $value['username'];
+	$phone = $value['phone'];
+	$firstordertime = $value['first_order_time'];
+	// $last_order_interval = $value['last_order_interval'];
+	$items = $value['items'];
+	$order_time = $value['order_time'];
+	$amount = $value['total_payment'];
+	$timestamp = strtotime("now");
+	//strtotime($order_time);
+	$appmemberid = $value['appmemberid'];
+
+	if ($email != "temp@no.email" && !is_null($email)) {
+		echo "email: ".$email."\n";
+		echo "phone: ".$phone."\n";
+		echo "id: ".$id."\n";
+
+		$tracker->track(
+		    $metric,
+		    array('$id' => $id,'$email' => $email , '$last_name' => $name,'$phone_number'=>$phone ,'First Order Time'=>$firstordertime,'Last Order Time' => $order_time,'appmemid' => $appmemberid),
+		    array('Items' => $items,'Order Time'=>$order_time,'Order Amount'=>$amount),
+		    $timestamp
+		);	
+	}
+
+	// echo "email: ".$email.'<br>';
 	
-// }
+}
 
 //print_r($orders);
 

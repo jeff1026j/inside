@@ -42,7 +42,7 @@ function getUrlContent($url){
 
 function getCurrentTime(){
 
-	return curlPost("https://api.91mai.com/scm/Utils/GetCurrentTime",null);
+	return curlPost("https://api.91mai.com/scm/v1/Utils/GetCurrentTime",null);
 }
 function call91api($url,$input){
 
@@ -292,6 +292,8 @@ function getAppOrders($shopId,$orderDeliverType,$orderDateType,$startDate,$endDa
 			);	
 
 	$result = json_decode(call91api($url,$input));
+	
+	//print_r($result);
 
 	if ($result->Status != "Success") {
 		$result = null;	
@@ -337,7 +339,7 @@ function getAppOrdersCount($shopId,$orderDeliverType,$orderDateType,$startDate,$
 
 
 function getAppOrderSpec($shopId,$TMCode,$TSCode){
-
+	echo "getAppOrderSpec start\n";
 	$url = "https://api.91mai.com/scm/v1/Order/GetOrder";
 	$input = json_encode(
 				array(

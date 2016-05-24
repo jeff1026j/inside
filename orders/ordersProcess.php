@@ -74,6 +74,7 @@ function updateOrderAmountApp(){
 	$mysqli->query($sql);
 }
 
+echo "order process\n";
 
 updateFirstOrdertime();
 updateLastOrderTime();

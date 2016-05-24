@@ -63,6 +63,7 @@ function getEmailsOvertwo(){
 			                            count(DISTINCT o1.order_id) AS returncustomer, 
 			                            o1.appmemberid 
 			                   FROM     Orders AS o1 
+			                   WHERE o1.order_time > "2015-04-01"
 			                   GROUP BY o1.'.cohortkey.'
 			                   HAVING   (returncustomer > 1) ) o2 
 			LEFT JOIN user u 
@@ -159,7 +160,7 @@ function getListBytime($minTime, $maxTime){
 			                            o1.appmemberid,
 			                            o1.order_time 
 			                   FROM     Orders AS o1 
-			                   WHERE order_time > "'.$minTime.'" and order_time < "'.$maxTime.'"
+			                   WHERE order_time > "'.$minTime.'" and order_time < "'.$maxTime.'" 
 			                    ) o2 
 			LEFT JOIN user u 
 			ON u.phone = o2.phone;';
@@ -251,7 +252,8 @@ foreach ($output as $v) {
 			array('$first_name' => "　",
 				'$last_name' => $username,
 				'$phone_number' => $phone, 
-				'$id' =>  $id)
+				'$id' => $email, 
+				)
 			);
 }
 

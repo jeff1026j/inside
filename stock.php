@@ -43,6 +43,7 @@
                     <th data-field="tradebuy" data-editable="true" data-sortable="true">切貨1</th>
                     <th data-field="price" data-editable="true" data-sortable="true">價格</th>
                     <th data-field="cost" data-editable="true">成本</th>
+                    <th data-field="margin">毛利</th>
                     <th data-field="avg_sale" data-sortable="true">平均月銷量</th>
                     <th data-field="sale_day" data-sortable="true" data-cell-style="cellStyle">周轉天</th>
                     <th data-field="quantity" data-sortable="true">庫存</th>

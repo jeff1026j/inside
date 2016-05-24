@@ -25,7 +25,7 @@ if (is_null($product_id) || ((strcasecmp($field, "cost") !== 0) && (strcasecmp($
 $sql = "UPDATE product set ".$field." = ? where product_id = ?";
 $stmt = $mysqli->prepare($sql); 
 $dtype = $field == "cost" || $field == "price" ? 'ds' : 'ss';
-$stmt->bind_param($dtype,$_POST[$field],trim($product_id));
+$stmt->bind_param($dtype,trim($_POST[$field]),trim($product_id));
 
 $stmt->execute(); 
 $stmt->close();  

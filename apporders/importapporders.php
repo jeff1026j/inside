@@ -98,12 +98,13 @@ function appOrderSaveToDB($order_time,
 }
 
 function importOrdersfrom91app($position,$count){
+	echo "importOrdersfrom91app start \n";
 	
 	$shopId=1993;
 	$orderDeliverType="";
 	$orderDateType="OrderDateTime";
 	$startDate = (new DateTime())->modify('-1 days')->format('Y-m-d');
-	$endDate = (new DateTime())->modify('+1 days')->format('Y-m-d');
+	$endDate = (new DateTime())->modify('+1 days')->format('Y-m-d ');
 	$orderStatus="";
 	// $position=$position;
 	// $count=$count;
@@ -161,6 +162,10 @@ function importOrdersfrom91app($position,$count){
 		$order_amount = $v->TotalPayment;
 		$shipping_fee = $v->TMShippingFee;
 		$vendor_order_no_extra = $v->TSCode;
+
+		echo 'order_time: '.$order_time."\n";
+		echo 'order_id: '.$vendor_order_no."\n";
+
 		// $invoice_print_detail = '$v->'
 		// $invoice_donate_unit = $v->
 		// $invoice_device_no = $v->
@@ -181,7 +186,7 @@ function importOrdersfrom91app($position,$count){
 		appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid,$storage_id);
 	}
 }
-
+echo "start\n";
 $shopId=1993;
 $orderDeliverType="";
 $orderDateType="OrderDateTime";
@@ -192,7 +197,7 @@ $position=0;
 $count=100;
 $ShippingOrderStatus="";
 $ordersCount = getAppOrdersCount($shopId,$orderDeliverType,$orderDateType,$startDate,$endDate,$orderStatus,$position,$count,$ShippingOrderStatus);
-
+echo "ordersCount: ".$ordersCount."\n";
 
 if ($ordersCount) {
 	for ($i=0; $i < $ordersCount; $i+=100) { 
