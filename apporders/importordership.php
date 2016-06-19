@@ -21,7 +21,7 @@ function payType($type){
 }
 
 //get return times and users from first month
-$sql = 'SELECT * FROM Orders WHERE order_from= "app" and morningstage = "pending" and order_type = 1 group by vendor_order_no';
+$sql = 'SELECT * FROM Orders WHERE order_from= "app" and status = "pending" and order_type = 1 group by vendor_order_no';
 
 $stmt = $mysqli->query($sql); 
 $orders = array();

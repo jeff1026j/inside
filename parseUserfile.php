@@ -108,7 +108,7 @@
     }
     unlink($rawfilename);
  
-    if (!$fileValid) {
+    if (!$fileValid || !$type) {
         echo '<h3> 上傳錯誤， 錯誤代碼：'.$errorCode.'<br/>錯誤解釋： '.errcodeInterpret($errorCode).'</h3>';
     }
 

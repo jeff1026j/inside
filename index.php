@@ -222,7 +222,10 @@
 
     //get current customer
     //endTime : 6/10
-    list($data, $returnCustomers) = getAllReturnOrders(null,$endTime,null);
+    //$starttime_temp = (new DateTime($date))->modify('-11 months')->format('Y-m-d');$endTime.' 00:00:00';
+    //$endTime = (new DateTime($date))->modify('-8 month')->format('Y-m-d');$endTime.' 00:00:00';
+    $starttime_temp = null;
+    list($data, $returnCustomers) = getAllReturnOrders($starttime_temp,$endTime,null);
     list($totalCustomer, $totalOrders) = getDistincOrders($endTime);
     
     // echo '$totalCustomer: ' .$totalCustomer.'<br>';
@@ -252,8 +255,8 @@
     // }   
 
 
-    $newOrderGoal = 15000;
-    $oldOrderGoal = 10000;
+    $newOrderGoal = 17000;
+    $oldOrderGoal = 11000;
     list($interval,$modeCount,$modeDay,$order_price) = returnInterval($data);
     $returnCustomers = array_unique($returnCustomers);
     $returnCustomer  = count($returnCustomers);

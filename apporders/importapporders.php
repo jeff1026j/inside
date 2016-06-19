@@ -7,13 +7,13 @@ function checkOrdersExisted($vendor_order_no,$vendor_order_no_extra){
 	
 	$result = false;
   
-	$sql2 = 'SELECT count(id) as total, order_id, morningstage FROM Orders where vendor_order_no = ? and vendor_order_no_extra = ?';
+	$sql2 = 'SELECT count(id) as total, order_id, status FROM Orders where vendor_order_no = ? and vendor_order_no_extra = ?';
 
 	$stmt2 = $mysqli->prepare($sql2); 
 	$stmt2->bind_param('ss',$vendor_order_no , $vendor_order_no_extra);
 
 	$stmt2->execute();
-	$stmt2->bind_result($total,$order_id,$morningstage);
+	$stmt2->bind_result($total,$order_id,$status);
 	$stmt2->fetch();
 	$stmt2->close();
 
@@ -21,7 +21,7 @@ function checkOrdersExisted($vendor_order_no,$vendor_order_no_extra){
 		$result = true;
 	}
 
-	return array('result' => $result,'order_id'=>$order_id,'morningstage'=>$morningstage);
+	return array('result' => $result,'order_id'=>$order_id,'status'=>$status);
 }
 
 
@@ -40,7 +40,7 @@ function appOrderSaveToDB($order_time,
 	$order_amount,
 	$shipping_fee,
 	$vendor_order_no_extra,
-	$morningstage,
+	$status,
 	$order_type,
 	$order_from,
 	$address,
@@ -60,9 +60,9 @@ function appOrderSaveToDB($order_time,
 
 	// if ($duplicate_data['result']){
 		
-	// 	if($duplicate_data['order_id'] && strcmp($duplicate_data['morningstage'],'ship')==0){
+	// 	if($duplicate_data['order_id'] && strcmp($duplicate_data['status'],'ship')==0){
 	// 			// echo $duplicate_data['order_id']."<br>";
-	// 			// echo $duplicate_data['morningstage']."<br>";
+	// 			// echo $duplicate_data['status']."<br>";
 	// 		 	deliveryShipment(1993,$vendor_order_no,array(),8,$duplicate_data['order_id']);
 	// 	}
 
@@ -86,9 +86,9 @@ function appOrderSaveToDB($order_time,
 	
 
 	
-	$sql = "INSERT INTO Orders (order_id, status,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,morningstage,order_type,address,city,zipcode,district,order_from, order_device, appmemberid,storage_id) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE morningstage = ?;";
+	$sql = "INSERT INTO Orders (order_id,order_time,ship_time,arrive_time, product_name, product_rank, product_quantity,product_price,product_cost,product_id,username,email,phone,vendor_order_no,pay_type,order_amount,shipping_fee,vendor_order_no_extra,status,order_type,address,city,zipcode,district,order_from, order_device, appmemberid,storage_id) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE status = ?;";
     $stmt = $mysqli->prepare($sql); 
-    $stmt->bind_param('ssssssddddssssssddssssssssssss',$vendor_order_no,$b='',$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$storage_id,$morningstage);
+    $stmt->bind_param('sssssddddssssssddssssssssssss',$vendor_order_no,$order_time,$c='',$d='', $product_name, $product_rank, $product_quantity,$product_price,$product_cost,$product_id,$username,$email, $phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$status,$order_type,$address,$city,$zipcode,$district,$order_from,$order_device,$appMemberid,$storage_id,$status);
 
     $stmt->execute(); 
 
@@ -173,7 +173,7 @@ function importOrdersfrom91app($position,$count){
 		// $invoice_date = '';
 		// $invoice_time = '';
 		// $buyer_identifier = $v->
-		$morningstage = $v->OrderStatus;
+		$status = $v->OrderStatus;
 		$order_type = $v->OrderShippingType;
 		$order_from = 'app';
 		$order_device = $v->OrderSource;
@@ -183,7 +183,7 @@ function importOrdersfrom91app($position,$count){
 		$district = $v->OrderReceiverDistrict;
 		$appMemberid = $v->MemberCode;
 
-		appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$morningstage,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid,$storage_id);
+		appOrderSaveToDB($order_time,$product_name,$product_rank,$product_quantity,$product_price,$product_cost,$product_id,$username,$email,$phone,$vendor_order_no,$pay_type,$order_amount,$shipping_fee,$vendor_order_no_extra,$status,$order_type,$order_from,$address,$city,$zipcode,$district,$order_device,$appMemberid,$storage_id);
 	}
 }
 echo "start\n";

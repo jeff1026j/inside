@@ -63,7 +63,7 @@ function getEmailsOvertwo(){
 			                            count(DISTINCT o1.order_id) AS returncustomer, 
 			                            o1.appmemberid 
 			                   FROM     Orders AS o1 
-			                   WHERE o1.order_time > "2015-04-01"
+			                   WHERE o1.order_time > "2015-04-01" and o1.status <> "Cancel"
 			                   GROUP BY o1.'.cohortkey.'
 			                   HAVING   (returncustomer > 1) ) o2 
 			LEFT JOIN user u 

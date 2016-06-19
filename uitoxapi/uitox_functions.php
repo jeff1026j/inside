@@ -131,7 +131,7 @@ function updateOrderStatus($status,$data){
     if ($status=="import") {
         // print_r($data);
         if ($data->vendor_order_no) {
-            $sql = "UPDATE Orders set order_id = ?, morningstage = ? where vendor_order_no =?";
+            $sql = "UPDATE Orders set order_id = ?, status = ? where vendor_order_no =?";
             $stmt = $mysqli->prepare($sql); 
             $stmt->bind_param('sss',$data->uitox_order_no,$status,$data->vendor_order_no);
 
@@ -140,7 +140,7 @@ function updateOrderStatus($status,$data){
         
     }else if ($status=="ship") {
         if ($data->vendor_order_no) {
-            $sql = "UPDATE Orders set morningstage = ? where vendor_order_no =?";
+            $sql = "UPDATE Orders set status = ? where vendor_order_no =?";
             $stmt = $mysqli->prepare($sql); 
             $stmt->bind_param('ss',$status,$data->vendor_order_no);
 
